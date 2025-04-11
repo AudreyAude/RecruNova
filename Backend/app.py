@@ -22,18 +22,23 @@ static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"static"))
 app.mount("/static",StaticFiles(directory=static_dir))
 
 
-# Connect = sc.connect(
-#     user= os.getenv("snowflake_user"),
-#     password= os.getenv("snowflake_password"),
-#     account=os.getenv("snowflake_account"),
-#     database=os.getenv("snowflake_database"),
-# )
+Connect = sc.connect(
+    user= os.getenv("snowflake_user"),
+    password= os.getenv("snowflake_password"),
+    account=os.getenv("snowflake_account"),
+    database=os.getenv("snowflake_database"),
+)
 
 @app.get("/home")
 async def home_page(request:Request):
     
     return templates.TemplateResponse("home.html",{"request":request })
 
+@app.get("/sing_up")
+async def connect_empl(resquest:Request):
+    sql = "SELECT * FROM  Recrunova.Recrut.Users where Email=%s"
+    params=[username]
+    
 
 
 if __name__=="__main__":
