@@ -35,8 +35,10 @@ cursor=Connect.cursor()
 
 @app.get("/home")
 async def home_page(request:Request):
-    
-    return templates.TemplateResponse("home.html",{"request":request })
+   user = request.session.get("user")
+   if user:
+        return templates.TemplateResponse("home.html",{"request":request ,"username":user})
+   return templates.TemplateResponse("home.html",{"request":request })
 
 
 @app.get("/sing_up")
@@ -46,30 +48,38 @@ async def  connect_emp(request:Request):
 
 
 @app.post("/sing_up")
-async def connect_empl(request:Request, E:User):
+async def connect_empl(request:Request,  nom :str = Form(...),
+    prenom :str = Form(...),
+    nom_entreprise:str = Form(...),
+    role :str= Form(...),
+    password :str = Form(...),
+    Tel :str= Form(...),
+    date_inscription:str = Form(...),
+    Email :str = Form(...)):
+
     sql = "SELECT * FROM  Recrunova.Recrut.Users where Email=%s"
-    params=[E.Email]
+    params=[Email]
     cursor.execute(sql,params)
     resultat=cursor.fetchone()
 
 
     if resultat:
-        return templates.TemplateResponse("User.html",{"request":request })
+        return templates.TemplateResponse("User.html",{"request":request,"message" : "Cet Email existe deja "})
     else:
         
-       y= password_hash(E.password)
+       y= password_hash(password)
 
-       E.date_inscription = datetime.now()
+       date_inscription = datetime.now()
        sql =""" 
-       INSERT INTO  Recrunova.Recrut.Users ( nom,prenom,nom_entreprise,role,password,Tel,date_inscription,Email,Cv )
-       values (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+       INSERT INTO  Recrunova.Recrut.Users ( nom,prenom,nom_entreprise,role,password,Tel,date_inscription,Email )
+       values (%s,%s,%s,%s,%s,%s,%s,%s)
        
        """
-       params=[E.nom,E.prenom,E.nom_entreprise,E.role,y,E.Tel,E.date_inscription,E.Email]
+       params=[nom,prenom,nom_entreprise,role,y,Tel,date_inscription,Email]
        x=cursor.execute(sql,params)
 
 
-       return templates.TemplateResponse("User.html",{"request":request })
+    return RedirectResponse(url='/login',status_code=200)
     
 
 @app.get("/login")
@@ -82,17 +92,18 @@ async def  Login (request:Request):
 
 @app.post("/login")
 
-async def Login(L:log,request:Request):
+async def Login(request:Request, Email :str =Form(...),password :str = Form(...)):
     sql="SELECT *  FROM  Recrunova.Recrut.Users where Email=%s"
-    params=[L.Email]
+    params=[Email]
     cursor.execute(sql,params)
     resultat=cursor.fetchone()
     
     if resultat:
-        x= password_verify(L.password,resultat[5])
+        x= password_verify(password,resultat[5])
 
         if x :
           s={
+              "user_id":resultat[0],
               "nom":resultat[1],
               "prenom":resultat[2],
               "Email":resultat[8],
@@ -115,18 +126,31 @@ async def Login(L:log,request:Request):
         return RedirectResponse(url='/login', status_code=302)
     
 
-@app.get("/ajout_offre")
-async def Ajout_offre(A:offre,request:Request):
-    sql=" INSERT INTO Recrunova.Recrut.Offres( titre,langue,salaire,description,competences,type_poste,horaire,avantages)" \
-    " values (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+@app.post("/ajout_offre")
+async def Ajout_offre(request:Request, titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),):
+    sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages) values (%s,%s,%s,%s,%s,%s,%s,%s)"
 
-    params=[ A.titre,A.langue,A.salaire,A.description,A.competences,A.type_poste,A.horaire,A.avantages]
+    params=[titre,langue,salaire,description,competences,type_poste,horaire,avantages]
     cursor.execute(sql,params)
 
-    return templates.TemplateResponse("")
+    return templates.TemplateResponse("home.html",{"request":request})
+
+
+@app.get("/recup_offre")
+async def Recuper_off(request:Request):
+    sql="SELECT * FROM  Recrunova.Recrut.Offres"
+    cursor.execute(sql)
+    resultat=cursor.fetchall()
+    response=[]
 
 
 
+
+@app.post("/logout")
+async def logout(request:Request):
+    response =RedirectResponse(url='/login')
+    request.session.clear()
+    return response
 
 
 
