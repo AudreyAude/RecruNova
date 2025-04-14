@@ -130,7 +130,7 @@ async def Login(request:Request, Email :str =Form(...),password :str = Form(...)
 async def Ajout_offre(request:Request, titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),):
     sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages) values (%s,%s,%s,%s,%s,%s,%s,%s)"
 
-    params=[titre,langue,salaire,description,competences,type_poste,horaire,avantages]
+    params= [user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages]
     cursor.execute(sql,params)
 
     return templates.TemplateResponse("home.html",{"request":request})
@@ -141,9 +141,20 @@ async def Recuper_off(request:Request):
     sql="SELECT * FROM  Recrunova.Recrut.Offres"
     cursor.execute(sql)
     resultat=cursor.fetchall()
-    response=[]
+  
+
+    return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
 
 
+@app.get("/description/{id}")
+async def Descrip(request:Request,offre_id:str = (...)):
+    sql="SELECT * FROM Recrunova.Recrut.offres where offre_id =%s"
+    cursor.execute(sql)
+    resultat=cursor.fetchone()
+
+
+    return templates.TemplateResponse("description.html",{"request":request,"resultat":resultat})
+   
 
 
 @app.post("/logout")
