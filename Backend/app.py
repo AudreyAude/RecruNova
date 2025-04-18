@@ -256,7 +256,8 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
         return RedirectResponse(url='/login', status_code=302)  
 
 
-    return RedirectResponse(url='/login',status_code=200)
+
+
     
 
 @app.get("/login")
