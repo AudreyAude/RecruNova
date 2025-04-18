@@ -24,7 +24,7 @@
         
         <td scope="row">{{item[0]}}</td>
         <td>{{item[1]}}</td>
-        <td><a href="" type="button" class="btn btn-danger">
+        <td><a href="{{ url_for('deleteOffre', id=item[0]) }}" type="button" class="btn btn-danger">
             <i class="bi bi-x-square-fill"></i> supprimer</a>  <a href="{{ url_for('UpdateOffre', id=item[0]) }}" type="button" class="btn btn-primary">
               <i class="bi bi-pencil-fill"> modifier</i></a> </td>
         

@@ -35,6 +35,10 @@ Connect = sc.connect(
  
 cursor=Connect.cursor() 
 
+current_time=datetime.now()
+     
+time=current_time.strftime("%Y-%m-%d")
+
 @app.get("/")
 async def home_page(request:Request):
     user = request.session.get("user")
@@ -66,14 +70,14 @@ async def connect_empl(request:Request, nom: str=Form(...),prenom:str=Form(...),
         
        y= password_hash(password)
 
-       date_inscription = datetime.now()
+       
       
        sql =""" 
        INSERT INTO  Recrunova.Recrut.Users ( nom,prenom,nom_entreprise,role,password,Tel,date_inscription,Email )
        values (%s,%s,%s,%s,%s,%s,%s,%s)
        
        """
-       params=[nom,prenom,nom_entreprise,role,y,Tel,date_inscription,Email]
+       params=[nom,prenom,nom_entreprise,role,y,Tel,time,Email]
        cursor.execute(sql,params)
        password= os.getenv("password")
        if role=="1":
@@ -141,7 +145,7 @@ async def candidature (request:Request,id:str):
     user=request.session.get("user",None) 
     if user:
         sql = """
-  SELECT u.NOM_ENTREPRISE,o.titre,c.statut FROM Recrunova.Recrut.Candidatures AS c
+  SELECT u.NOM_ENTREPRISE,o.titre,c.statut, c.date FROM Recrunova.Recrut.Candidatures AS c
   JOIN Recrunova.Recrut.Offres AS o
   ON c.offre_id = o.offre_id
   JOIN Recrunova.Recrut.users AS u
@@ -152,7 +156,7 @@ async def candidature (request:Request,id:str):
         params=[id]
         cursor.execute(sql,params)
         resultat=cursor.fetchall()
-        print(resultat)
+    
         return templates.TemplateResponse("candidature.html",{"request":request,"username":user,"resultat":resultat})
     return templates.TemplateResponse("home.html",{"request":request})
 
@@ -186,7 +190,7 @@ async def Ajout_offre(request:Request, user_id:str=Form(...), titre :str = Form(
             else:
                     sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages,lieu,date,entreprise) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
-                    params=[user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages,lieu,datetime.now(),user['organisation']]
+                    params=[user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages,lieu,time,user['organisation']]
                     cursor.execute(sql,params)
                     message="l'emploie a ete bien publie"
 
@@ -259,64 +263,6 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
         return RedirectResponse(url='/login', status_code=302)  
 
 
-
-
-    
-
-# @app.get("/login")
-# async def  Login (request:Request):
-#     error=request.session.get("error",None)
-#     if error:
-#         return templates.TemplateResponse("login.html",{"request":request,"error":error})
-#     return templates.TemplateResponse("login.html",{"request":request})
-
-
-# @app.post("/login")
-
-# async def Login(request:Request, Email :str =Form(...),password :str = Form(...)):
-#     sql="SELECT *  FROM  Recrunova.Recrut.Users where Email=%s"
-#     params=[Email]
-#     cursor.execute(sql,params)
-#     resultat=cursor.fetchone()
-    
-#     if resultat:
-#         x= password_verify(password,resultat[5])
-
-#         if x :
-#           s={
-#               "user_id":resultat[0],
-#               "nom":resultat[1],
-#               "prenom":resultat[2],
-#               "Email":resultat[8],
-#               "Role":resultat[4],
-#             }
-#           response = RedirectResponse(url='/', status_code=302)
-          
-#           request.session["user"] = s
-          
-#           return response
-        
-#         else:
-#           request.session["error"] = "mot de passe incorrect"
-          
-#         return RedirectResponse(url='/login', status_code=302)
-      
-#     else: 
-#         request.session["error"] = "email introuvable "
-
-#         return RedirectResponse(url='/login', status_code=302)
-    
-
-# @app.post("/ajout_offre")
-# async def Ajout_offre(request:Request, titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),):
-#     sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages) values (%s,%s,%s,%s,%s,%s,%s,%s)"
-
-#     params= [user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages]
-#     cursor.execute(sql,params)
-
-#     return templates.TemplateResponse("home.html",{"request":request})
-
-
 @app.get("/recup_offre")
 async def Recuper_off(request:Request):
     sql="SELECT * FROM  Recrunova.Recrut.Offres"
@@ -325,18 +271,6 @@ async def Recuper_off(request:Request):
   
 
     return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
-
-
-@app.get("/description/{id}")
-async def Descrip(request:Request,offre_id:str = (...)):
-    sql="SELECT * FROM Recrunova.Recrut.offres where offre_id =%s"
-    cursor.execute(sql)
-    resultat=cursor.fetchone()
-
-
-    return templates.TemplateResponse("description.html",{"request":request,"resultat":resultat})
-   
-
 
  
 
@@ -370,8 +304,8 @@ async def postule(request:Request,file:UploadFile=File(...),file1:UploadFile=Fil
 
         
                 statut="en cours de traitement"
-                sql=" INSERT INTO Recrunova.Recrut.Candidatures(user_id,Offre_id,statut,lettre_motivation,cv) values (%s,%s,%s,%s,%s)"
-                params=[user_id,offre_id,statut,path,path1] 
+                sql=" INSERT INTO Recrunova.Recrut.Candidatures(user_id,Offre_id,statut,lettre_motivation,cv,date) values (%s,%s,%s,%s,%s)"
+                params=[user_id,offre_id,statut,path,path1,time] 
                
                 cursor.execute(sql,params)
                 Tab=[path,path1]
@@ -395,7 +329,7 @@ async def listcandidature (request:Request,id:str):
     user=request.session.get("user",None) 
     if user:
         sql = """
-  SELECT o.titre,u.nom,u.prenom ,c.cv,c.LETTRE_MOTIVATION,c.statut,c.candidature_id   FROM Recrunova.Recrut.Candidatures AS c
+  SELECT o.titre,u.nom,u.prenom ,c.cv,c.LETTRE_MOTIVATION,c.statut,c.candidature_id,o.date  FROM Recrunova.Recrut.Candidatures AS c
   JOIN Recrunova.Recrut.Offres AS o
   ON c.offre_id = o.offre_id
   JOIN Recrunova.Recrut.users AS u
@@ -415,7 +349,8 @@ async def listcandidature (request:Request,id:str):
                 "cv":item[3].replace("Backend",""),
                 "lettre_motivation":item[4].replace("Backend",""),
                 "statut":item[5],
-                "id_user":item[6]
+                "id_user":item[6],
+                "date":item[7]
 
 
             }
@@ -478,32 +413,35 @@ async def UpdateOffre (request:Request,id:str):
 
     return templates.TemplateResponse("home.html",{"request":request})
 
-@app.post("/UpdateOffre") 
 
-async def UpdateOffre (request:Request,id:str):
+@app.get("/deleteOffre/{id}")
+async def deleteOffre(request:Request,id:str):
     user=request.session.get("user",None) 
     if user:
     
-
-        sql = """
-  UPDATE Recrunova.Recrut.offres
-SET TITRE =%s,langue=%s,salaire=%s,description=%s,competences=%s,type_poste=%s,horaire=%s,avantage=%s
-WHERE offre_id=%s;
-
-
-    """ 
+        print("delete")
+        sql ="""
+        DELETE  FROM Recrunova.Recrut.offres
+        WHERE offre_id=%s;
+        """ 
+ 
         params=[id]
         cursor.execute(sql,params)
       
-        return templates.TemplateResponse("home.html",{"request":request})
+        return RedirectResponse(url=f"/ListOffre/{user['user_id']}",status_code=302)
+        
 
     return templates.TemplateResponse("home.html",{"request":request})
+
+
+
 
 @app.get("/logout")
 async def logout(request:Request):
     response =RedirectResponse(url='/login')
     request.session.clear()
     return response
+
 
 
 
