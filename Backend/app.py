@@ -106,7 +106,7 @@ async def Login(request:Request,Email:str=Form(...),password:str=Form(...)):
     request.session["error"] = "veuillez remplir tout les champs svp"
     return RedirectResponse(url='/login', status_code=302)
 
-  else:
+  else: 
     sql="SELECT *  FROM  Recrunova.Recrut.Users where Email=%s"
     params=[Email]
     cursor.execute(sql,params)
@@ -114,6 +114,7 @@ async def Login(request:Request,Email:str=Form(...),password:str=Form(...)):
     
     if resultat:
         x= password_verify(password,resultat[5])
+
         
         if x :
           s={
@@ -123,6 +124,11 @@ async def Login(request:Request,Email:str=Form(...),password:str=Form(...)):
               "organisation":resultat[3],
               "Email":resultat[8],
               "Role":resultat[4],
+              "tel":resultat[6],
+              "date":resultat[7],
+              "cv":resultat[9],
+              "password":resultat[5]
+              
             }
           response = RedirectResponse(url='/', status_code=302)
           
@@ -402,7 +408,7 @@ async def UpdateOffre (request:Request,id:str):
     
 
         sql ="""
-        SELECT offre_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages   FROM Recrunova.Recrut.offres 
+        SELECT offre_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages,lieu   FROM Recrunova.Recrut.offres 
         WHERE offre_id = %s;
    """  
         params=[id]
@@ -410,6 +416,26 @@ async def UpdateOffre (request:Request,id:str):
         resultat=cursor.fetchone()
       
         return templates.TemplateResponse("updatJob.html",{"request":request,"username":user,"resultat":resultat})
+
+    return templates.TemplateResponse("home.html",{"request":request})
+
+
+@app.post("/UpdateOffre") 
+async def UpdateOffre (request:Request,offre_id:str=Form(...), titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),lieu:str=Form(...)):
+    user=request.session.get("user",None) 
+    if user: 
+    
+
+        sql =""" 
+            UPDATE Recrunova.Recrut.offres
+            SET titre =%s,langue=%s,salaire=%s,description=%s,competences=%s,type_poste=%s,horaire=%s,avantages=%s,lieu=%s
+            WHERE offre_id=%s;
+            """  
+        params=[titre,langue,salaire,description,competences,type_poste,horaire,avantages,lieu,offre_id]
+        cursor.execute(sql,params)
+       
+      
+        return RedirectResponse(url=f"/ListOffre/{user['user_id']}",status_code=302)
 
     return templates.TemplateResponse("home.html",{"request":request})
 
@@ -436,12 +462,83 @@ async def deleteOffre(request:Request,id:str):
 
 
 
+
+
+@app.get("/profile")
+
+async def profile(request:Request):
+    user=request.session.get("user",None) 
+     
+    if user:
+         
+
+        return templates.TemplateResponse("profile.html",{"request":request,"username":user})
+    return templates.TemplateResponse("home.html",{"request":request})
+
+@app.post("/updatepassword")
+
+async def updatepassword(request:Request,password1:str=Form(...),password2:str=Form(...)):
+    user=request.session.get("user",None)  
+    if user:
+        x= password_verify(password1,user['password'])
+        print(x)
+
+        if not password1 or not password2  :
+                message="veuillez remplir tout les champs svp"
+                return templates.TemplateResponse("profile.html",{"request":request,"message":message,"username":user})
+        elif x!=True:
+                message="ancien mot de passe non valide "
+                return templates.TemplateResponse("profile.html",{"request":request,"message":message,"username":user})
+        elif x==True:
+             sql =""" 
+            UPDATE Recrunova.Recrut.users
+            SET password=%s
+            WHERE user_id=%s;
+            """  
+        params=[user["user_id"]]
+        cursor.execute(sql,params)
+        message="le mot de passe a ete change "
+
+         
+
+        return templates.TemplateResponse("profile.html",{"request":request,"username":user,"message":message})
+    return templates.TemplateResponse("home.html",{"request":request})
+
+@app.post("/updateprofile")
+
+async def updatepassword(request:Request,nom:str=Form(...),prenom:str=Form(...),tel:str=Form(...)):
+    user=request.session.get("user",None)  
+    if user:
+      
+        if not nom or not prenom or not tel  :
+                message="veuillez remplir tout les champs svp"
+                return templates.TemplateResponse("profile.html",{"request":request,"message1":message,"username":user})
+       
+        else:
+             sql =""" 
+            UPDATE Recrunova.Recrut.users
+            SET nom=%s,prenom=%s,tel=%s
+            WHERE user_id=%s;
+            """  
+        params=[nom,prenom,tel,user["user_id"]]
+        # cursor.execute(sql,params)
+        message="le changement effectuer "
+
+         
+
+        return templates.TemplateResponse("profile.html",{"request":request,"username":user,"message1":message})
+    return templates.TemplateResponse("home.html",{"request":request})
+
+
+
+    
+
+
 @app.get("/logout")
 async def logout(request:Request):
     response =RedirectResponse(url='/login')
     request.session.clear()
     return response
-
 
 
 
