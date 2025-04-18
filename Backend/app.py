@@ -7,7 +7,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-from .model import User,log,offre
+# from .model import User,log,offre
 from .function import password_hash,password_verify
 from.Mail import mailPostuleCandidat,mailRegister
 from datetime import datetime
@@ -335,11 +335,7 @@ async def Descrip(request:Request,offre_id:str = (...)):
    
 
 
-@app.post("/logout")
-async def logout(request:Request):
-    response =RedirectResponse(url='/login')
-    request.session.clear()
-    return response
+
 
 
 @app.get("/postule/{id}") 
