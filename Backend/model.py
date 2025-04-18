@@ -11,6 +11,7 @@ class User(BaseModel):
     Tel :str
     date_inscription:str
     Email :str
+<<<<<<< HEAD
 
 
 class User(BaseModel):
@@ -23,6 +24,8 @@ class User(BaseModel):
     Tel :str
     date_inscription:str
     Email :str
+=======
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
     # Cv 
 
 

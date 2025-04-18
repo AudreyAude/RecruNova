@@ -7,17 +7,26 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
+<<<<<<< HEAD
 from .model import User,log
 from .function import password_hash,password_verify
 from.Mail import mailRegister,mailPostuleCandidat
+=======
+from .model import User,log,offre
+from .function import password_hash,password_verify
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
 from datetime import datetime
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
 app=FastAPI()
 load_dotenv()
+<<<<<<< HEAD
 
 app.add_middleware(SessionMiddleware,secret_key=os.getenv("secret_key"),max_age=300)
+=======
+app.add_middleware(SessionMiddleware,Secret_key=os.getenv("secret_key"),max_age=60)
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
 templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"templates"))
 templates=Jinja2Templates(directory=templates_dir)
 
@@ -37,6 +46,7 @@ cursor=Connect.cursor()
 
 @app.get("/")
 async def home_page(request:Request):
+<<<<<<< HEAD
     user = request.session.get("user")
    
     if user:
@@ -44,6 +54,14 @@ async def home_page(request:Request):
    
     return templates.TemplateResponse("home.html",{"request":request })
  
+=======
+   user = request.session.get("user")
+   if user:
+        return templates.TemplateResponse("home.html",{"request":request ,"username":user})
+   return templates.TemplateResponse("home.html",{"request":request })
+
+
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
 @app.get("/sing_up")
 async def  connect_emp(request:Request):
     
@@ -51,29 +69,49 @@ async def  connect_emp(request:Request):
 
 
 @app.post("/sing_up")
+<<<<<<< HEAD
 async def connect_empl(request:Request, nom: str=Form(...),prenom:str=Form(...),nom_entreprise:str=Form(...),role:str=Form(...),password:str=Form(...),Tel:str=Form(...),Email:str=Form(...)):
     
+=======
+async def connect_empl(request:Request,  nom :str = Form(...),
+    prenom :str = Form(...),
+    nom_entreprise:str = Form(...),
+    role :str= Form(...),
+    password :str = Form(...),
+    Tel :str= Form(...),
+    date_inscription:str = Form(...),
+    Email :str = Form(...)):
+
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
     sql = "SELECT * FROM  Recrunova.Recrut.Users where Email=%s"
     params=[Email]
     cursor.execute(sql,params)
     resultat=cursor.fetchone()
 
     if resultat:
+<<<<<<< HEAD
         message=f"{Email} est deja utilise "
        
         return templates.TemplateResponse("User.html",{"request":request ,"message":message })
+=======
+        return templates.TemplateResponse("User.html",{"request":request,"message" : "Cet Email existe deja "})
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
     else:
         
        y= password_hash(password)
 
        date_inscription = datetime.now()
+<<<<<<< HEAD
       
+=======
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
        sql =""" 
        INSERT INTO  Recrunova.Recrut.Users ( nom,prenom,nom_entreprise,role,password,Tel,date_inscription,Email )
        values (%s,%s,%s,%s,%s,%s,%s,%s)
        
        """
        params=[nom,prenom,nom_entreprise,role,y,Tel,date_inscription,Email]
+<<<<<<< HEAD
        cursor.execute(sql,params)
        password= os.getenv("password")
        if role=="1":
@@ -254,8 +292,94 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
         if user:
             return templates.TemplateResponse("Addcv.html",{"request":request ,"username":user,"message":response})
         return RedirectResponse(url='/login', status_code=302)  
+=======
+       x=cursor.execute(sql,params)
+>>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
 
 
+    return RedirectResponse(url='/login',status_code=200)
+    
+
+@app.get("/login")
+async def  Login (request:Request):
+    error=request.session.get("error",None)
+    if error:
+        return templates.TemplateResponse("login.html",{"request":request,"error":error})
+    return templates.TemplateResponse("login.html",{"request":request})
+
+
+@app.post("/login")
+
+async def Login(request:Request, Email :str =Form(...),password :str = Form(...)):
+    sql="SELECT *  FROM  Recrunova.Recrut.Users where Email=%s"
+    params=[Email]
+    cursor.execute(sql,params)
+    resultat=cursor.fetchone()
+    
+    if resultat:
+        x= password_verify(password,resultat[5])
+
+        if x :
+          s={
+              "user_id":resultat[0],
+              "nom":resultat[1],
+              "prenom":resultat[2],
+              "Email":resultat[8],
+              "Role":resultat[4],
+            }
+          response = RedirectResponse(url='/', status_code=302)
+          
+          request.session["user"] = s
+          
+          return response
+        
+        else:
+          request.session["error"] = "mot de passe incorrect"
+          
+        return RedirectResponse(url='/login', status_code=302)
+      
+    else: 
+        request.session["error"] = "email introuvable "
+
+        return RedirectResponse(url='/login', status_code=302)
+    
+
+@app.post("/ajout_offre")
+async def Ajout_offre(request:Request, titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),):
+    sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+
+    params= [user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages]
+    cursor.execute(sql,params)
+
+    return templates.TemplateResponse("home.html",{"request":request})
+
+
+@app.get("/recup_offre")
+async def Recuper_off(request:Request):
+    sql="SELECT * FROM  Recrunova.Recrut.Offres"
+    cursor.execute(sql)
+    resultat=cursor.fetchall()
+  
+
+    return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
+
+
+@app.get("/description/{id}")
+async def Descrip(request:Request,offre_id:str = (...)):
+    sql="SELECT * FROM Recrunova.Recrut.offres where offre_id =%s"
+    cursor.execute(sql)
+    resultat=cursor.fetchone()
+
+
+    return templates.TemplateResponse("description.html",{"request":request,"resultat":resultat})
+   
+
+
+@app.post("/logout")
+async def logout(request:Request):
+    response =RedirectResponse(url='/login')
+    request.session.clear()
+    return response
 
 
 @app.get("/postule/{id}") 
