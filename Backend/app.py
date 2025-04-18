@@ -7,26 +7,17 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-<<<<<<< HEAD
-from .model import User,log
-from .function import password_hash,password_verify
-from.Mail import mailRegister,mailPostuleCandidat
-=======
 from .model import User,log,offre
 from .function import password_hash,password_verify
->>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
+from.Mail import mailPostuleCandidat,mailRegister
 from datetime import datetime
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
 app=FastAPI()
 load_dotenv()
-<<<<<<< HEAD
 
 app.add_middleware(SessionMiddleware,secret_key=os.getenv("secret_key"),max_age=300)
-=======
-app.add_middleware(SessionMiddleware,Secret_key=os.getenv("secret_key"),max_age=60)
->>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
 templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"templates"))
 templates=Jinja2Templates(directory=templates_dir)
 
@@ -46,7 +37,6 @@ cursor=Connect.cursor()
 
 @app.get("/")
 async def home_page(request:Request):
-<<<<<<< HEAD
     user = request.session.get("user")
    
     if user:
@@ -54,14 +44,6 @@ async def home_page(request:Request):
    
     return templates.TemplateResponse("home.html",{"request":request })
  
-=======
-   user = request.session.get("user")
-   if user:
-        return templates.TemplateResponse("home.html",{"request":request ,"username":user})
-   return templates.TemplateResponse("home.html",{"request":request })
-
-
->>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
 @app.get("/sing_up")
 async def  connect_emp(request:Request):
     
@@ -69,49 +51,29 @@ async def  connect_emp(request:Request):
 
 
 @app.post("/sing_up")
-<<<<<<< HEAD
 async def connect_empl(request:Request, nom: str=Form(...),prenom:str=Form(...),nom_entreprise:str=Form(...),role:str=Form(...),password:str=Form(...),Tel:str=Form(...),Email:str=Form(...)):
     
-=======
-async def connect_empl(request:Request,  nom :str = Form(...),
-    prenom :str = Form(...),
-    nom_entreprise:str = Form(...),
-    role :str= Form(...),
-    password :str = Form(...),
-    Tel :str= Form(...),
-    date_inscription:str = Form(...),
-    Email :str = Form(...)):
-
->>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
     sql = "SELECT * FROM  Recrunova.Recrut.Users where Email=%s"
     params=[Email]
     cursor.execute(sql,params)
     resultat=cursor.fetchone()
 
     if resultat:
-<<<<<<< HEAD
         message=f"{Email} est deja utilise "
        
         return templates.TemplateResponse("User.html",{"request":request ,"message":message })
-=======
-        return templates.TemplateResponse("User.html",{"request":request,"message" : "Cet Email existe deja "})
->>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
     else:
         
        y= password_hash(password)
 
        date_inscription = datetime.now()
-<<<<<<< HEAD
       
-=======
->>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
        sql =""" 
        INSERT INTO  Recrunova.Recrut.Users ( nom,prenom,nom_entreprise,role,password,Tel,date_inscription,Email )
        values (%s,%s,%s,%s,%s,%s,%s,%s)
        
        """
        params=[nom,prenom,nom_entreprise,role,y,Tel,date_inscription,Email]
-<<<<<<< HEAD
        cursor.execute(sql,params)
        password= os.getenv("password")
        if role=="1":
@@ -292,9 +254,6 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
         if user:
             return templates.TemplateResponse("Addcv.html",{"request":request ,"username":user,"message":response})
         return RedirectResponse(url='/login', status_code=302)  
-=======
-       x=cursor.execute(sql,params)
->>>>>>> 4cacb13ca4892eabf7fa0fefb5834634cda64252
 
 
     return RedirectResponse(url='/login',status_code=200)
