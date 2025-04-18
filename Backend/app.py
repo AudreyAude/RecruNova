@@ -521,8 +521,8 @@ async def updatepassword(request:Request,nom:str=Form(...),prenom:str=Form(...),
             WHERE user_id=%s;
             """  
         params=[nom,prenom,tel,user["user_id"]]
-        # cursor.execute(sql,params)
-        message="le changement effectuer "
+        cursor.execute(sql,params)
+        message="les changements ont ete effectues "
 
          
 
@@ -531,7 +531,54 @@ async def updatepassword(request:Request,nom:str=Form(...),prenom:str=Form(...),
 
 
 
+ #pour matcher le cv avec l'offre j'ai ajoute ca 
+@app.get("/matching/{candidat_id}")
+
+async def Matching(candidat_id:str):
     
+    def cv():
+
+        sql1=""" select cv from Recrunova.Recrut.users 
+                where user_id=%s
+    """
+        params=[candidat_id]
+        cursor.execute (sql1,params)
+        resultat=cursor.fetchone()
+        path=resultat[0]
+        
+        
+        return path
+    
+    def offre():
+        sql="SELECT * FROM  Recrunova.Recrut.Offres"
+        cursor.execute(sql)
+        resultat=cursor.fetchall()
+        return resultat
+    path=cv()
+    resultat=offre()
+    print(path)
+   
+
+  
+    response=[]
+    for row in resultat:
+
+        response=f"titre:{row[0]}\n\n salaire:{row[1]}\n\n description:\t{row[3]}\n\n competences:\t{row[2]}"
+
+
+        x=cv_matching(path,response)
+        if x*100 > 78:
+           
+            result={
+                "titre":row[0],
+                "salaire":row[1],
+                "competences":row[2],
+                "description":row[3]
+            }    
+        
+            response.append(result) 
+    return{'message':response}
+   
 
 
 @app.get("/logout")
