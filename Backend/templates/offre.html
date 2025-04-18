@@ -6,7 +6,6 @@
 
 
 
-
 <div class="container mt-5">
   <h2 class="text-center mb-4">Offres d'emploi disponibles</h2>
 
@@ -21,10 +20,12 @@
               <div class="mb-2">
                 <span class="badge bg-primary me-2">{{ item[7] }}</span>
                 <span class="badge bg-success">{{ item[8] }}</span>
+                <span class="badge bg-secondary">{{ item[4] }}</span>
+
               </div>
-              <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> Montréal, QC</p>
-              <p class="mb-1"><strong>Entreprise :</strong> TechNova Solutions</p>
-              <p class="mb-2"><strong>Date :</strong> 12 avril 2025</p>
+              <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{item[10]}}, QC</p>
+              <p class="mb-1"><strong>Entreprise :</strong> {{item[12]}}</p>
+              <p class="mb-2"><strong>Date de publication :</strong> {{item[11]}}</p>
             </div>
             <div class="col-3 text-end"> 
               <img src="/static/images/enterprise.png" 

@@ -25,11 +25,11 @@ templates=Jinja2Templates(directory=templates_dir)
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"static"))
 app.mount("/static",StaticFiles(directory=static_dir), name="static")
 
- 
+   
 Connect = sc.connect(
     user= os.getenv("snowflake_user"),
     password= os.getenv("snowflake_password"),
-    account=os.getenv("snowflake_account"),
+    account=  os.getenv("snowflake_account"),
     database=os.getenv("snowflake_database"),
 )
  
@@ -167,29 +167,32 @@ async def Ajout_offre(request:Request):
 
 
 @app.post("/ajout_offre")
-async def Ajout_offre(request:Request, user_id:str=Form(...), titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),):
+async def Ajout_offre(request:Request, user_id:str=Form(...), titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),lieu:str=Form(...)):
     user = request.session.get("user")
-    
-    if user['Role']=="2":
-            message="desole un compte employeur est necessaire"
-            return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
 
-    else:
-
-        
-        if not titre or not langue or not salaire or not description or not competences or not type_poste or not horaire or not avantages:
-            message="veuillez remplir tout les champs svp"
-            return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
-
+    if user:
+        if user['Role']=="2":
+                message="desole un compte employeur est necessaire"
+                return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
 
         else:
-                sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
-                params=[user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages]
-                cursor.execute(sql,params)
-                message="l'emploie a ete bien publie"
+            
+            if not titre or not langue or not salaire or not description or not competences or not type_poste or not horaire or not avantages or not lieu :
+                message="veuillez remplir tout les champs svp"
+                return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
 
-                return templates.TemplateResponse("home.html",{"request":request,"message":message,"username":user})
+
+            else:
+                    sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages,lieu,date,entreprise) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+
+                    params=[user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages,lieu,datetime.now(),user['organisation']]
+                    cursor.execute(sql,params)
+                    message="l'emploie a ete bien publie"
+
+                    return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
+    else:
+       RedirectResponse(url='/login', status_code=302)
 
 
 @app.get("/offre")
@@ -260,58 +263,58 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
 
     
 
-@app.get("/login")
-async def  Login (request:Request):
-    error=request.session.get("error",None)
-    if error:
-        return templates.TemplateResponse("login.html",{"request":request,"error":error})
-    return templates.TemplateResponse("login.html",{"request":request})
+# @app.get("/login")
+# async def  Login (request:Request):
+#     error=request.session.get("error",None)
+#     if error:
+#         return templates.TemplateResponse("login.html",{"request":request,"error":error})
+#     return templates.TemplateResponse("login.html",{"request":request})
 
 
-@app.post("/login")
+# @app.post("/login")
 
-async def Login(request:Request, Email :str =Form(...),password :str = Form(...)):
-    sql="SELECT *  FROM  Recrunova.Recrut.Users where Email=%s"
-    params=[Email]
-    cursor.execute(sql,params)
-    resultat=cursor.fetchone()
+# async def Login(request:Request, Email :str =Form(...),password :str = Form(...)):
+#     sql="SELECT *  FROM  Recrunova.Recrut.Users where Email=%s"
+#     params=[Email]
+#     cursor.execute(sql,params)
+#     resultat=cursor.fetchone()
     
-    if resultat:
-        x= password_verify(password,resultat[5])
+#     if resultat:
+#         x= password_verify(password,resultat[5])
 
-        if x :
-          s={
-              "user_id":resultat[0],
-              "nom":resultat[1],
-              "prenom":resultat[2],
-              "Email":resultat[8],
-              "Role":resultat[4],
-            }
-          response = RedirectResponse(url='/', status_code=302)
+#         if x :
+#           s={
+#               "user_id":resultat[0],
+#               "nom":resultat[1],
+#               "prenom":resultat[2],
+#               "Email":resultat[8],
+#               "Role":resultat[4],
+#             }
+#           response = RedirectResponse(url='/', status_code=302)
           
-          request.session["user"] = s
+#           request.session["user"] = s
           
-          return response
+#           return response
         
-        else:
-          request.session["error"] = "mot de passe incorrect"
+#         else:
+#           request.session["error"] = "mot de passe incorrect"
           
-        return RedirectResponse(url='/login', status_code=302)
+#         return RedirectResponse(url='/login', status_code=302)
       
-    else: 
-        request.session["error"] = "email introuvable "
+#     else: 
+#         request.session["error"] = "email introuvable "
 
-        return RedirectResponse(url='/login', status_code=302)
+#         return RedirectResponse(url='/login', status_code=302)
     
 
-@app.post("/ajout_offre")
-async def Ajout_offre(request:Request, titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),):
-    sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+# @app.post("/ajout_offre")
+# async def Ajout_offre(request:Request, titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...),):
+#     sql=" INSERT INTO Recrunova.Recrut.Offres( user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages) values (%s,%s,%s,%s,%s,%s,%s,%s)"
 
-    params= [user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages]
-    cursor.execute(sql,params)
+#     params= [user_id,titre,langue,salaire,description,competences,type_poste,horaire,avantages]
+#     cursor.execute(sql,params)
 
-    return templates.TemplateResponse("home.html",{"request":request})
+#     return templates.TemplateResponse("home.html",{"request":request})
 
 
 @app.get("/recup_offre")
@@ -335,7 +338,7 @@ async def Descrip(request:Request,offre_id:str = (...)):
    
 
 
-
+ 
 
 
 @app.get("/postule/{id}") 
