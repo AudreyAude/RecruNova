@@ -1,0 +1,85 @@
+{% extends "base.html"%}
+{% block title %} Inscription {% endblock %}
+
+{% block content %}
+<main class="main_home">
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+      <div class="col-lg-7 text-center text-lg-start">
+        <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">rejoignez une communauté dynamique de talents et d'entreprises.</h1>
+        <!-- <p class="col-lg-10 fs-4">Bienvenue sur notre plateforme de recrutement
+            Nous sommes ravis de vous accompagner dans votre parcours professionnel. Ensemble, construisons votre avenir dès aujourd'hui.</p> -->
+      </div>
+      <div class="col-md-10 mx-auto">
+      
+        <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post" action="/sing_up">
+           
+            {% if message %}
+            <div class="form-floating mb-3 alert alert-danger dropdown text-end">
+            {{ message }}
+            </div>
+            {% endif %}
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput" placeholder="nom" 
+                name="nom"
+                >
+                <label for="floatingInput">nom</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput" placeholder="prenom" 
+                name="prenom"
+                >
+                <label for="floatingInput">prenom</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput" placeholder="nom_entreprise" 
+                name="nom_entreprise"
+                >
+                <label for="floatingInput">Organisation</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput" placeholder="Telephone" 
+                name="Tel"
+                >
+                <label for="floatingInput">Telephone</label>
+
+              </div>
+              
+              <div class="mb-3 form-floating">
+                
+                <select class="form-select" id="role" name="role">
+                  <option selected>Veuillez sélectionner une option</option>
+                  <option value="1">Recruteur</option>
+                  <option value="2">chercheur d'emploie</option>
+                </select>
+              </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" 
+            name="Email"
+            >
+            <label for="floatingInput">adresse Email</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" placeholder="Password"
+            name="password"  >
+            <label for="password">Mot de passe </label>
+
+            <button type="button" class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" onclick="togglePassword()">
+              <i class="bi bi-eye" id="Icon"></i>
+            </button>
+          </div>
+         
+          <button class="w-100 btn btn-lg btn-primary" type="submit">s'inscrire</button>
+        
+        </form>
+      </div>
+    </div>
+  </div>
+
+</main>
+  {% endblock %}

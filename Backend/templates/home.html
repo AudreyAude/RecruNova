@@ -1,31 +1,130 @@
 
 {% extends "base.html"%}
-{% block title %} Ayden Birthday {% endblock %}
+{% block title %} RecruNova {% endblock %}
 
 {% block content %}
-<main class="px-3  ">
-  <div >
-    
-    <h1>🌟 Le compte à rebours est lancé…</h1>
-   
-    <p> Le <strong>10 mai</strong>, une date pas comme les autres, une journée qu’on attend avec impatience et amour… car ce jour-là, nous célébrons une personne exceptionnelle : Ayden 🧸
+<main>
+  <h1 class="visually-hidden">Trouvez l’emploi de vos rêves</h1>
 
-      Petit cœur rempli d’énergie, <strong> Ayden</strong> est ce genre d’enfant qui illumine chaque pièce où il entre. Avec ses sourires malicieux, ses éclats de rire contagieux et son imagination débordante, il transforme le quotidien en aventure, et les journées en éclats de bonheur.
+  <div class="px-4 py-5 my-5 text-center">
+    <img class="d-block mx-auto mb-4" src="/static/images/logo.png" alt="" width="72" height="57">
+    <h1 class="display-5 fw-bold text-body-emphasis">Trouvez l’emploi de vos rêves</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Gagnez du temps avec notre solution de recrutement efficace.
+        Trouvez rapidement des candidats qualifiés pour vos postes clés.
+        
+        </p>
       
-      Pour ses proches, il est un trésor. Pour ses amis, un complice de jeu infatigable. Pour nous tous, il est un rayon de soleil qu’on veut célébrer comme il se doit.
-      
-      🎈 Le <strong>10 mai </strong>prochain, nous organisons une fête pleine de magie, de jeux, de rires et de surprises pour faire briller ses yeux et remplir son cœur de souvenirs inoubliables.
-      
-      Si tu lis ceci, c’est que tu fais partie de ceux qu’il aime — et ta présence à cette journée rendra son bonheur encore plus grand 💙
-      
-      Viens fêter Ayden avec nous. Il t’attend avec impatience, gâteau à la main et étoiles plein les yeux 🎂🌟
-      
-      <strong> joyeux anniversaire Ayden, tu es notre fierté et notre joie.</strong></p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <a href="/offre" type="button" class="btn btn-primary btn-lg px-4 gap-3">Carrieres</a>
+       
+      </div>
+    </div>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  <div class="px-4 pt-5 my-5 text-center border-bottom">
+    <h1 class="display-4 fw-bold text-body-emphasis">Recrutez les meilleurs talents</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Gagnez du temps avec notre solution de recrutement efficace.
+        Trouvez rapidement des candidats qualifiés pour vos postes clés.</p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+       
+        <!-- <button type="button" class="btn btn-outline-secondary btn-lg px-4">publier un emploie</button> -->
+      </div>
+    </div>
+    <div class="overflow-hidden" style="max-height: 30vh;">
+      <div class="container px-5">
+        <img src="/static/images/img0.jpg" class="img-fluid border rounded-3 shadow-lg mb-4" alt="Example image" width="700" height="500" loading="lazy">
+      </div>
+    </div>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  <div class="container col-xxl-8 px-4 py-5">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+      <div class="col-10 col-sm-8 col-lg-6">
+        <img src="/static/images/img2.jpg" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
+      </div>
+      <div class="col-lg-6">
+        <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Profils vérifiés et ciblés</h1>
+        <p class="lead"> Faites confiance à notre base de données enrichie de profils complets et vérifiés.
+          Nous vous aidons à matcher avec les bons talents.</p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+ 
+          <a href="/ajout_offre" type="button" class="btn btn-outline-secondary btn-lg px-4">publie une offre</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+      <div class="col-lg-7 text-center text-lg-start">
+        <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3"> Un accompagnement sur mesure</h1>
+        <p class="col-lg-10 fs-4">Que vous soyez candidat ou employeur, nous sommes à vos côtés à chaque étape.
+          Conseils, alertes personnalisées et support humain.</p>
+      </div>
+      {%if username  %}
+      <div class="col-lg-4 offset-lg-1 p-0 overflow-hidden shadow-lg">
+        <img class="rounded-lg-3" src="/static/images/img4.jpg"alt="" width="720">
     </div>
 
-    <div >
+      {%else%}
 
-     
+
+      <div class="col-md-10 mx-auto col-lg-5">
+        <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post" action="/login">
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="floatingInput" name="Email" placeholder="name@example.com">
+            <label for="floatingInput">Adresse Email</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+            <label for="password">mot de passe </label>
+            <button type="button" class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" onclick="togglePassword()">
+              <i class="bi bi-eye" id="Icon"></i>
+            </button>
+          </div>
+          <div class="checkbox mb-3">
+            <label>
+              <input type="checkbox" value="remember-me"> Pour garantir une utilisation sécurisée et transparente de notre plateforme, merci d'accepter nos conditions d'utilisation.
+            </label>
+          </div>
+          <button class="w-100 btn btn-lg btn-primary" type="submit">connexion</button>
+          <hr class="my-4">
+          <small class="text-body-secondary"><a href="/sing_up">je m'inscris </a></small>
+        </form>
+      </div>
+      {%endif%}
     </div>
-  </main>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  <div class="container my-5">
+    <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3 border shadow-lg">
+      <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+        <h1 class="display-4 fw-bold lh-1 text-body-emphasis"> Plateforme simple et intuitive</h1>
+        <p class="lead">Postulez ou recrutez en quelques clics.
+          Notre interface a été pensée pour vous faire gagner du temps et de l’efficacité.</p>
+        
+      </div>
+      <div class="col-lg-4 offset-lg-1 p-0 overflow-hidden shadow-lg">
+          <img class="rounded-lg-3" src="/static/images/img3.jpg"alt="" width="720">
+      </div>
+    </div>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  
+
+  <div class="b-example-divider mb-0"></div>
+</main>
+
   {% endblock %}

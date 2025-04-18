@@ -1,0 +1,38 @@
+{% extends "base.html"%}
+{% block title %} listes des offres {% endblock %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">identifiant</th>
+        <th scope="col">titre</th>
+
+        <th scope="col">action</th>
+       
+
+      
+
+
+      </tr>
+    </thead>
+    <tbody>
+      
+        {%for item in resultat%}
+      <tr>
+        
+        <td scope="row">{{item[0]}}</td>
+        <td>{{item[1]}}</td>
+        <td><a href="" type="button" class="btn btn-danger">
+            <i class="bi bi-x-square-fill"></i> supprimer</a>  <a href="{{ url_for('UpdateOffre', id=item[0]) }}" type="button" class="btn btn-primary">
+              <i class="bi bi-pencil-fill"> modifier</i></a> </td>
+        
+     
+
+      </tr>
+      {%endfor%}
+    </tbody>
+  </table>
+
+{% endblock %}

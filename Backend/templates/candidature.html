@@ -1,0 +1,40 @@
+{% extends "base.html"%}
+{% block title %} candidature {% endblock %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">entreprise</th>
+
+        <th scope="col">offre</th>
+        <th scope="col">statut</th>
+        <th scope="col">action</th>
+
+      
+
+
+      </tr>
+    </thead>
+    <tbody>
+      
+        {%for item in resultat%}
+      <tr>
+        <th scope="row">{{1}}</th>
+        <td>{{item[0]}}</td>
+        <td>{{item[1]}}</td>
+        <td >{{item[2]}}</td>
+        <td><a href="#" type="button" class="btn btn-danger">
+       <i class="bi bi-trash"></i></a></td>
+
+        
+     
+
+      </tr>
+      {%endfor%}
+    </tbody>
+  </table>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html"%}
+{% block title %} description {% endblock %}
+
+{% block content %}
+
+
+<form action="/postule" method="post" enctype="multipart/form-data">
+    {% if message %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong></strong>     {{ message }}
+
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+    {% endif %}
+    <div class="mb-3">
+        <input class="form-control form-control-lg" id="formFileLg" type="hidden" value="{{username.user_id}}" name="user_id">
+      </div>
+      <div class="mb-3">
+        <input class="form-control form-control-lg" id="formFileLg" type="hidden" value="{{id}}" name="offre_id">
+      </div>
+    <div class="mb-3">
+    <label for="formFileLg" class="form-label">charger votre lettre de motivation</label>
+    <input class="form-control form-control-lg" id="formFileLg" type="file" name="file">
+  </div>
+
+  <div class="mb-3">
+    <label for="formFileLg" class="form-label">charger votre cv</label>
+    <input class="form-control form-control-lg" id="formFileLg" type="file" name="file1">
+  </div>
+  <button class="w-100 btn btn-lg btn-primary" type="submit">Soumettre</button>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,8 @@
+.main_home {
+    background-image: url('/static/images/logo.png'); /* Remplacez par le chemin de votre image */
+    background-size: cover;       /* L'image couvre toute la zone */
+    background-repeat: no-repeat; /* Empêche la répétition de l'image */
+    background-position: center;  /* Centre l'image */
+    background-attachment: fixed; /* L'image reste fixe lors du défilement */
+  }
+  

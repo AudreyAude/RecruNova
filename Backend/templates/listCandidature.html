@@ -1,0 +1,82 @@
+{% extends "base.html"%}
+{% block title %}liste candidats{% endblock %}
+
+{% block content %}
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">identifiant</th>
+        <th scope="col">offre</th>
+
+        <th scope="col">nom</th>
+        <th scope="col">prenom</th>
+        <th scope="col">cv</th>
+        <th scope="col">lettre motivation</th>
+        <th scope="col">statut</th>
+        <th scope="col">chat</th>
+        <th scope="col">satut de la demande </th>
+      
+
+
+       
+
+
+        
+
+
+
+      
+
+
+      </tr>
+    </thead>
+    <tbody>
+   
+        {%for item in resultat%}
+
+
+      <tr>
+
+        <th scope="row">{{item.id_user}}</th>
+        <td>{{item.titre}}</td>
+        <td>{{item.nom}}</td>
+        <td >{{item.prenom}}</td>
+
+        <td><a href="{{ item.cv}}"   download="cv {{item[1]}}" type="button" class="btn btn-primary">
+            <i class="bi bi-arrow-down-square"></i></a> </td>
+
+       <td ><a href="{{item.lettre_motivation}}"  download="lettre motivation {{item[1]}}" type="button" class="btn btn-primary ">
+        <i class="bi bi-arrow-down-square"></i></a> </td>
+        {% set x = "" %}
+        {%if item.statut=="refuser" or item.statut=="accepter" %}
+        {% set x="disabled"%}
+       <td><a href="{{ url_for('Updatestatut', id=item.id_user,value='refuser') }}" type="button" class="btn btn-danger {{x}}">
+        <i class="bi bi-x-square-fill"></i> refuser</a> 
+      
+        <a href="{{ url_for('Updatestatut', id=item.id_user,value='accepter' )}}" type="button" class="btn btn-primary {{x}}">
+            <i class="bi bi-file-check-fill"> accepter</i></a> 
+        {%endif%}
+        
+      </td>
+
+
+       <td><a href="" type="button" class="btn btn-danger">
+        <i class="bi bi-chat"></i> consulter</a> </td>
+        <td >{{item.statut}}</td> 
+      
+
+   
+
+
+
+
+
+      
+     
+
+      </tr>
+      {%endfor%}
+    </tbody>
+  </table>
+
+{% endblock %}

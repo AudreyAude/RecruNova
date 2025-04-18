@@ -1,0 +1,76 @@
+{% extends "base.html"%}
+{% block title %} description {% endblock %}
+
+{% block content %}
+<div class="modal fade" id="chatbotModal" tabindex="-1" aria-labelledby="chatbotModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="chatbotModalLabel"><i class="bi bi-robot"></i> Chatbot RecruNova</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <p>Bonjour ! Je suis votre assistant RecruNova 🤖. Comment puis-je vous aider aujourd’hui ?</p>
+        
+        <textarea class="form-control mb-2" rows="3" placeholder="Posez-moi une question..."></textarea>
+        <button class="btn btn-outline-primary w-100"><i class="bi bi-send"></i> Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- offre -->
+
+<div class="container mt-5">
+  <div class="card shadow-lg p-4 rounded-4">
+    <div class="row g-4 align-items-center">
+      <div class="row g-4 align-items-center">
+      <div class="col-md-8">
+        <h2 class="card-title mb-3">{{resultat[2]}}</h2>
+        <span class="badge bg-primary me-2">{{resultat[7]}}</span>
+        <span class="badge bg-success">{{resultat[8]}}</span>
+        <p class="text-muted mt-3"><i class="bi bi-geo-alt"></i> Montréal, QC</p>
+        <p><strong>Entreprise :</strong> TechNova Solutions</p>
+        <p><strong>Date de publication :</strong> 12 avril 2025</p>
+        <hr>
+        <h5>Description du poste</h5>
+        <p>
+          {{resultat[5]}}
+        </p>
+
+        <h5>Compétences requises</h5>
+        {% for ligne in resultat[6].split('\n') %}
+          {% if ligne.strip() %}
+            <li>{{ ligne.strip() }}</li>
+          {% endif %}
+        {% endfor %}
+        <h5>Avantages</h5>
+        <p>{{ resultat[9].replace('\n', '<br>')|safe }}</p>
+      </div>
+
+      <div class="col-md-4 text-center">
+        <img src="/static/images/enterprise.png" class="img-fluid rounded-circle mb-3" alt="Company logo" style="width: 150px;">
+        <a href="{{ url_for('postule', id=resultat[0]) }}" class="btn btn-outline-primary btn-lg w-100 mb-2"><i class="bi bi-upload"></i> Postuler maintenant</a>
+      
+        <a href="#" type="button" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4 shadow" 
+        style="width: 60px; height: 60px; z-index: 1050;" data-bs-toggle="modal" data-bs-target="#chatbotModal">
+        <i class="bi bi-robot fs-3"></i>
+      </a>
+  
+        <a href="/static/lettre_motivation.pdf" class="btn btn-secondary btn-lg w-100" download>
+          📄 Télécharger la lettre de motivation
+        </a>
+
+        <a href="/offre" class="btn btn-link w-100">⬅ Retour aux offres</a>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+{% endblock %}

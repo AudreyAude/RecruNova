@@ -1,0 +1,99 @@
+{% extends "base.html"%}
+{% block title %} modifier une offre {% endblock %}
+
+{% block content %}
+
+<main class="form-signin w-100 m-auto"> 
+    {% if message %}
+    <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+        <strong>     {{ message }} </strong>
+
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+    {% endif %}
+ <!-- <p>{{resultat[4]}}</p> -->
+    <form  method="post" action="UpdateOffre">
+        <img class="d-block mx-auto mb-4" src="/static/images/logo.png" alt="" width="90" height="80">
+
+      <!-- <img class="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+      <h1 class="h3 mb-4 fw-normal">Créer une nouvelle offre</h1>
+
+      <div class="form-floating mb-3 ">
+        <input type="hidden" class="form-control" id="floatingInput" placeholder="name@example.com" name="user_id" value="{{username.user_id}}">
+        <label for="floatingInput">user_id</label>
+      </div>
+
+      <div class="form-floating mb-3 ">
+        <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="titre" value="{{resultat[1]}}">
+        <label for="floatingInput">Titre</label>
+      </div>
+
+      <div class="mb-3 form-floating">
+                
+        <select class="form-select" id="role" name="langue" value="{{resultat[2]}}">
+          <option selected>langue</option>
+          <option value="Francais">Francais</option>
+          <option value="Anglais">Anglais</option>
+          <option value="Bilingue">Bilingue</option>
+
+        </select>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingPassword" placeholder="salaire" name="salaire" value="{{resultat[3]}}">
+        <label for="floatingPassword">Salaire </label>
+      </div>
+  
+   
+         
+      <div class="mb-3 form-floating">
+                
+        <select class="form-select" id="role" name="type_poste" value="{{resultat[6]}}">
+          <option selected>Poste</option>
+          <option value="Temps Partiel"> Temps partiel</option>
+          <option value="Temps Plein">Temps Plein</option>
+          <option value="Sur Appel">Sur Appel</option>
+
+        
+
+        </select>
+      </div>
+
+      <div class="mb-3 form-floating">
+                
+        <select class="form-select" id="role" name="horaire" value="{{resultat[7]}}">
+          <option selected>Horaire</option>
+          <option value="8h-16h"> 8h-16h </option>
+          <option value="16-00h">16-00h</option>
+          <option value="00h-8h">00h-8h</option>
+
+        </select>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingPassword" placeholder="avantages" name="avantages" value="{{resultat[8]}}">
+        <label for="floatingPassword">avantages </label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <textarea  style="height: 200px " type="text" class="form-control" id="floatingInput" placeholder="description"name="description" > {{resultat[4]}}</textarea>
+              <label for="floatingInput">description</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <textarea  style="height: 200px " type="text" class="form-control" id="floatingInput" placeholder="competences" 
+        name="competences"
+        >{{resultat[5]}} </textarea>
+        <label for="floatingInput">competences</label>
+      </div>
+  
+      <button class="btn btn-primary w-100 py-2" type="submit">modifier</button>
+      <!-- titre :str = Form(...), langue :str = Form(...),salaire :str = Form(...),description :str= Form(...),competences :str= Form(...),type_poste :str = Form(...),horaire :str= Form(...), avantages :str= Form(...) -->
+
+   
+    </form>
+  </main>
+
+    
+{% endblock %}

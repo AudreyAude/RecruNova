@@ -1,0 +1,40 @@
+{% extends "base.html"%}
+{% block title %} Connexion{% endblock %}
+
+{% block content %}
+<!-- <main class="form-signin w-100 m-auto">  -->
+    <form  method="post" action="/login">
+        <img class="d-block mx-auto mb-4" src="/static/images/logo.png" alt="" width="90" height="80">
+
+      <!-- <img class="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+      <h1 class="h3 mb-3 fw-normal">Votre espace personnalisé vous attend</h1>
+
+      {% if error %}
+      <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+          <strong>     {{ error }} </strong>
+  
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+  
+      {% endif %}
+      <div class="form-floating mb-3 ">
+        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="Email">
+        <label for="floatingInput">Adresse Email</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+        <label for="password">Mot de passe </label>
+        <button type="button" class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" onclick="togglePassword()">
+            <i class="bi bi-eye" id="Icon"></i>
+          </button>
+      </div>
+  
+  
+      <button class="btn btn-primary w-100 py-2" type="submit">connexion</button>
+      <hr class="my-4">
+      <small class="text-body-secondary"><a href="/sing_up">je m'inscris </a></small>
+    </form>
+  <!-- </main> -->
+   
+
+  {% endblock %}

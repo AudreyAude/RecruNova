@@ -1,0 +1,52 @@
+{% extends "base.html"%}
+{% block title %} Offre {% endblock %}
+
+{% block content %}
+
+
+
+
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Offres d'emploi disponibles</h2>
+
+  <div class="row g-4">
+    {% for item in resultat %}
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-9">
+              <h5 class="card-title">{{ item[2] }}</h5>
+              <div class="mb-2">
+                <span class="badge bg-primary me-2">{{ item[7] }}</span>
+                <span class="badge bg-success">{{ item[8] }}</span>
+              </div>
+              <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> Montréal, QC</p>
+              <p class="mb-1"><strong>Entreprise :</strong> TechNova Solutions</p>
+              <p class="mb-2"><strong>Date :</strong> 12 avril 2025</p>
+            </div>
+            <div class="col-3 text-end"> 
+              <img src="/static/images/enterprise.png" 
+                   class="img-fluid rounded-circle mb-4" 
+                   alt="Company logo" 
+                   style="width: 70px;">
+              <a class="btn btn-outline-primary btn-sm w-100  mb-4" href="{{ url_for('description', id=item[0]) }}">Voir plus...</a>
+
+              <a href="{{ url_for('postule', id=item[0]) }}" class="btn btn-outline-primary btn-sm w-100 mb-4"><i class="bi bi-upload"></i> Postuler maintenant</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+     
+
+
+{% endblock %}
+
+
