@@ -57,6 +57,14 @@
       
         <a href="{{ url_for('Updatestatut', id=item.id_user,value='accepter' )}}" type="button" class="btn btn-primary {{x}}">
             <i class="bi bi-file-check-fill"> accepter</i></a> 
+        {%else%}
+        {% set x = "" %}
+        <td><a href="{{ url_for('Updatestatut', id=item.id_user,value='refuser') }}" type="button" class="btn btn-danger {{x}}">
+          <i class="bi bi-x-square-fill"></i> refuser</a> 
+        
+          <a href="{{ url_for('Updatestatut', id=item.id_user,value='accepter' )}}" type="button" class="btn btn-primary {{x}}">
+              <i class="bi bi-file-check-fill"> accepter</i></a> 
+
         {%endif%}
         
       </td>

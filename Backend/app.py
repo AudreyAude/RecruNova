@@ -246,7 +246,9 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
         if file.content_type not in content_Type or file is None:
             response='format de fichier non valide'
         else:  
+            static_dir
             path_dir="Backend\static\CVs"
+          
             path=rf"{os.path.join(path_dir,file.filename)}"
      
             content= await file.read()
@@ -310,22 +312,26 @@ async def postule(request:Request,file:UploadFile=File(...),file1:UploadFile=Fil
 
         
                 statut="en cours de traitement"
-                sql=" INSERT INTO Recrunova.Recrut.Candidatures(user_id,Offre_id,statut,lettre_motivation,cv,date) values (%s,%s,%s,%s,%s)"
+                sql=" INSERT INTO Recrunova.Recrut.Candidatures(user_id,Offre_id,statut,lettre_motivation,cv,date) values (%s,%s,%s,%s,%s,%s)"
                 params=[user_id,offre_id,statut,path,path1,time] 
                
                 cursor.execute(sql,params)
                 Tab=[path,path1]
                 for i in Tab:
+                    if i=="path":
+                        content= await file.read()
+                    else :
+                         content= await file1.read()
+                
+                
+                    with open(i,"wb")as f:
 
-                 with open(path,"wb")as f:
-
-                    content= await file.read()
                   
-                    f.write(content)
+                        f.write(content)
                 response=f"candidature a ete bien recu"
                 password= os.getenv("password")
 
-                mailPostuleCandidat(user['Email',user['nom'],password])
+                mailPostuleCandidat(user['Email'],user['nom'],password)
 
                 return templates.TemplateResponse("postule.html",{"request":request ,"username":user,"message":response})
         return RedirectResponse(url='/login', status_code=302)  
