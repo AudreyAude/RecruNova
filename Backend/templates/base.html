@@ -192,6 +192,42 @@
     }
   </script>
 
+
+<script>
+  const chatLog = document.getElementById("chat-log");
+  const chatForm = document.getElementById("chat-form");
+  const userInput = document.getElementById("user-input");
+
+  chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    // Afficher le message utilisateur
+    chatLog.innerHTML += `<div class="text-end mb-2"><strong>Moi :</strong> ${message}</div>`;
+    userInput.value = "";
+
+    // Optionnel : loader IA
+    chatLog.innerHTML += `<div id="typing" class="text-start mb-2 text-muted">L'IA écrit...</div>`;
+    chatLog.scrollTop = chatLog.scrollHeight;
+
+    // Appel API à FastAPI
+    const response = await fetch("/matching", {
+      method: "post",
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: new URLSearchParams({message})
+    });
+
+    const data = await response.json();
+    document.getElementById("typing").remove();
+
+    // Afficher réponse IA
+    chatLog.innerHTML += `<div class="text-start mb-2"><strong>IA :</strong> ${data.response}</div>`;
+    chatLog.scrollTop = chatLog.scrollHeight;
+  });
+</script>
+
+
   
   </body>
 <style>

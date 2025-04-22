@@ -116,6 +116,103 @@ def save_text_to_pdf(text, filename="lettre_de_motivation.pdf"):
     pdf_buffer = BytesIO(pdf_bytes)
     pdf_buffer.seek(0)
     return pdf_buffer
+
+def chat(path,response,question):
+        model=ChatOpenAI(model="gpt-3.5-turbo",temperature=0.0,api_key=os.getenv("ApiKey"))
+
+        parser=StrOutputParser()
+        chain=model|parser
+
+        template= """
+                tu t appeles Audrey toujours te presenter
+                CONTEXTE OBLIGATOIRE :
+                1. CV du candidat ({cv})
+                - Extraire exhaustivement :
+                * Compétences techniques
+                * Expériences professionnelles
+                * Formations
+                * Certifications
+                * Réalisations significatives
+
+                2. Offre d'emploi ({offre_emploi})
+                - Identification précise :
+                * Intitulé du poste
+                * Missions principales
+                * Compétences techniques requises
+                * Compétences comportementales
+                * Prérequis et profil recherché
+
+                3. Question de l'utilisateur ({question})
+                - Analyse du besoin spécifique
+                - Intention de la demande
+                - Contexte de la requête
+
+                MÉCANISME DE TRAITEMENT :
+                - Mapping compétences à 100%
+                - Scoring de correspondance
+                - Identification des écarts et opportunités
+                - Réponse ultraPersonnalisée
+
+                RÈGLES DE GÉNÉRATION :
+                - 90% des informations proviennent du contexte
+                - Zéro invention
+                - Langage précis et professionnel
+                - Justification systématique
+
+                ALGORITHME DE RÉPONSE :
+                - Correspondance > 80% : Valorisation
+                - Correspondance < 80% : Recommandations de développement
+                - Traçabilité des éléments de réponse
+
+                TON :
+                - Expert
+                - Bienveillant
+                - Constructif
+                - Orienté solution
+                """
+        prompt=ChatPromptTemplate.from_template(template)
+
+
+        chain=prompt|model|parser
+
+        #cv 
+        path_cv=rf"{path}"
+        extension=os.path.splitext(path_cv)[1].lower()
+        
+        if extension==".docx":
+                
+
+                loader_cv=Docx2txtLoader(path_cv)
+                text_cv=loader_cv.load()
+                
+        
+        if extension==".pdf":
+           loader = PyPDFLoader(path_cv)
+           text_cv = loader.load()
+           
+        # loader_cv=Docx2txtLoader(path_cv)
+        # text_cv=loader_cv.load()
+        text_split_cv=RecursiveCharacterTextSplitter(chunk_size=100,chunk_overlap=20)
+        doc_cv=text_split_cv.split_documents(text_cv)
+        #offre
+        text_split_offre=RecursiveCharacterTextSplitter(chunk_size=100,chunk_overlap=20)
+        doc_offre=text_split_offre.split_text(response)
+
+        embeddings=OpenAIEmbeddings(model="text-embedding-ada-002", api_key=os.getenv("ApiKey"))
+
+        VectorStore_cv= DocArrayInMemorySearch.from_documents(doc_cv,embedding=embeddings)
+        VectorStore_offre= DocArrayInMemorySearch.from_texts(doc_offre,embedding=embeddings)
+
+        chunks_retriever_cv=VectorStore_cv.as_retriever()
+        chunks_retriever_offre=VectorStore_offre.as_retriever()
+       
+        setup=RunnableParallel(cv=chunks_retriever_cv, offre_emploi=chunks_retriever_offre ,question=RunnablePassthrough())
+
+        chain=setup|prompt|model|parser
+        x=chain.invoke(question)
+        return x
+
+
  
 
 

@@ -3,14 +3,14 @@ import uvicorn
 import os,sys
 import snowflake.connector as sc
 from dotenv import load_dotenv
-from fastapi.responses import RedirectResponse,StreamingResponse
+from fastapi.responses import RedirectResponse,StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 # from .model import User,log,offre
 from .function import password_hash,password_verify
 from.Mail import mailPostuleCandidat,mailRegister
-from .ia import cv_matching,lettre_motivation,save_text_to_pdf
+from .ia import cv_matching,lettre_motivation,save_text_to_pdf,chat
 from datetime import datetime
 
 
@@ -301,27 +301,7 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
 
         if user:
             return templates.TemplateResponse("Addcv.html",{"request":request ,"username":user,"message":response})
-        return RedirectResponse(url='/login', status_code=302)  
-
-
-# @app.get("/recup_offre")
-# async def Recuper_off(request:Request):
-#     user = request.session.get("user")
-
-#     if user['Role']=="2":
-
-#         if user['cv'] is None:
-#             resultat=[]
-
-#         else:
-
-#             sql="SELECT * FROM  Recrunova.Recrut.Offres"
-#             cursor.execute(sql)
-#             resultat=cursor.fetchall()
-    
-
-#             return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
-#         return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
+        return RedirectResponse(url='/login', status_code=302) 
 
  
 
@@ -605,7 +585,23 @@ async def lettre(request:Request,id:str):
         })
     
 
+@app.post("/matching")
+
+async def lettre(request:Request,id='102',message:str=Form(...)):
+    
+  
+        user=request.session.get("user",None)  
         
+        sql="SELECT * FROM  Recrunova.Recrut.Offres where offre_id= %s"
+        param=[id]
+        cursor.execute(sql,param)
+        resultat=cursor.fetchone()
+        path="Backend\static\CVs\cv1.docx"
+
+        response=f"titre:{resultat[2]}\n\n salaire:{resultat[4]}\n\n description:\t{resultat[5]}\n\n competences:\t{resultat[6]}"
+        x=chat(path,response,message)
+
+        return JSONResponse(content={"response": x})
 
         
     
