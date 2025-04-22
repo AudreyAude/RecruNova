@@ -197,10 +197,13 @@
   const chatLog = document.getElementById("chat-log");
   const chatForm = document.getElementById("chat-form");
   const userInput = document.getElementById("user-input");
+  const userId = document.getElementById("id");
+
 
   chatForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const message = userInput.value.trim();
+    const id= userId.value.trim();
     if (!message) return;
 
     // Afficher le message utilisateur
@@ -212,10 +215,10 @@
     chatLog.scrollTop = chatLog.scrollHeight;
 
     // Appel API à FastAPI
-    const response = await fetch("/matching", {
+    const response = await fetch("/chatBox", {
       method: "post",
       headers: {"Content-Type": "application/x-www-form-urlencoded"},
-      body: new URLSearchParams({message})
+      body: new URLSearchParams({ message: message, id: id })
     });
 
     const data = await response.json();

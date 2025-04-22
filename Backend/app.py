@@ -585,12 +585,13 @@ async def lettre(request:Request,id:str):
         })
     
 
-@app.post("/matching")
+@app.post("/chatBox")
 
-async def lettre(request:Request,id='102',message:str=Form(...)):
+async def chatBox(request:Request,id:str=Form(...),message:str=Form(...)):
     
   
         user=request.session.get("user",None)  
+        
         
         sql="SELECT * FROM  Recrunova.Recrut.Offres where offre_id= %s"
         param=[id]
@@ -599,9 +600,9 @@ async def lettre(request:Request,id='102',message:str=Form(...)):
         path="Backend\static\CVs\cv1.docx"
 
         response=f"titre:{resultat[2]}\n\n salaire:{resultat[4]}\n\n description:\t{resultat[5]}\n\n competences:\t{resultat[6]}"
-        x=chat(path,response,message)
+        x= chat(path,response,message)
 
-        return JSONResponse(content={"response": x})
+        return JSONResponse(content={"response": x}) 
 
         
     
