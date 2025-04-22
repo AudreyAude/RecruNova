@@ -3,7 +3,7 @@ import uvicorn
 import os,sys
 import snowflake.connector as sc
 from dotenv import load_dotenv
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse,StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -582,20 +582,30 @@ async def updatepassword(request:Request,nom:str=Form(...),prenom:str=Form(...),
 
  #pour matcher le cv avec l'offre j'ai ajoute ca 
 # @app.get("/matching/{candidat_id}")
-@app.get("/matching")
+@app.get("/lettre/{id}")
 
-async def Matching():
+async def lettre(request:Request,id:str):
     
   
+        user=request.session.get("user",None)  
         
-        sql="SELECT * FROM  Recrunova.Recrut.Offres where offre_id= 102"
-        cursor.execute(sql)
+        sql="SELECT * FROM  Recrunova.Recrut.Offres where offre_id= %s"
+        param=[id]
+        cursor.execute(sql,param)
         resultat=cursor.fetchone()
-        print(resultat)
         response=f"titre:{resultat[2]}\n\n salaire:{resultat[4]}\n\n description:\t{resultat[5]}\n\n competences:\t{resultat[6]}"
         x=lettre_motivation(response) 
-        y=save_text_to_pdf(x)
-        print(y)
+        pdf=save_text_to_pdf(x)
+
+        return StreamingResponse(
+        content=pdf,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": "attachment; filename=lettre_de_motivation.pdf"
+        })
+    
+
+        
 
         
     
