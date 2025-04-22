@@ -10,6 +10,7 @@ from starlette.middleware.sessions import SessionMiddleware
 # from .model import User,log,offre
 from .function import password_hash,password_verify
 from.Mail import mailPostuleCandidat,mailRegister
+from .ia import cv_matching,lettre_motivation,save_text_to_pdf
 from datetime import datetime
 
 
@@ -17,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
 app=FastAPI()
 load_dotenv()
 
-app.add_middleware(SessionMiddleware,secret_key=os.getenv("secret_key"),max_age=300)
+app.add_middleware(SessionMiddleware,secret_key=os.getenv("secret_key"),max_age=1000)
 templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"templates"))
 templates=Jinja2Templates(directory=templates_dir)
 
@@ -209,14 +210,46 @@ async def Ajout_offre(request:Request, user_id:str=Form(...), titre :str = Form(
 async def offre(request:Request):
         sql="SELECT * FROM  Recrunova.Recrut.Offres"
         cursor.execute(sql)
-        resultat=cursor.fetchall()
         user = request.session.get("user")
+        resultat=cursor.fetchall()
+        r=[]
+        
         if user:
-          return templates.TemplateResponse("offre.html",{"request":request, "resultat":resultat,"username":user})
+
+            
+
+            if user['Role']=="2":
+
+
+                if user['cv'] is None:
+                   
+
+                    return templates.TemplateResponse("offre.html",{"request":request, "resultat":resultat,"username":user})
+                else:
+
+                    
+                    for row in resultat:
+
+                        response=f"titre:{row[3]}\n\n salaire:{row[4]}\n\n description:\t{row[5]}\n\n competences:\t{row[6]}"
+                        path="Backend\static\CVs\cv2.pdf"
+                        x=cv_matching(path,response)
+                        print(x)
+                      
+
+                        if x*100>75:
+                            r.append(row)
+                   
+
+                    return templates.TemplateResponse("offre.html",{"request":request, "resultat":r,"username":user})
+            else:
+                return templates.TemplateResponse("offre.html",{"request":request, "resultat":resultat,"username":user})
+
+        return templates.TemplateResponse("offre.html",{"request":request, "resultat":resultat})
+
 
 
         
-        return templates.TemplateResponse("offre.html",{"request":request, "resultat":resultat})
+        # return templates.TemplateResponse("offre.html",{"request":request, "resultat":resultat})
 
 @app.get("/description/{id}")  
 async def description(request:Request, id:str):
@@ -271,14 +304,24 @@ async def addcv(request:Request,file:UploadFile=File(...),user_id: str = Form(..
         return RedirectResponse(url='/login', status_code=302)  
 
 
-@app.get("/recup_offre")
-async def Recuper_off(request:Request):
-    sql="SELECT * FROM  Recrunova.Recrut.Offres"
-    cursor.execute(sql)
-    resultat=cursor.fetchall()
-  
+# @app.get("/recup_offre")
+# async def Recuper_off(request:Request):
+#     user = request.session.get("user")
 
-    return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
+#     if user['Role']=="2":
+
+#         if user['cv'] is None:
+#             resultat=[]
+
+#         else:
+
+#             sql="SELECT * FROM  Recrunova.Recrut.Offres"
+#             cursor.execute(sql)
+#             resultat=cursor.fetchall()
+    
+
+#             return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
+#         return templates.TemplateResponse("offres.html",{"request":request,"resultat":resultat})
 
  
 
@@ -538,53 +581,33 @@ async def updatepassword(request:Request,nom:str=Form(...),prenom:str=Form(...),
 
 
  #pour matcher le cv avec l'offre j'ai ajoute ca 
-@app.get("/matching/{candidat_id}")
+# @app.get("/matching/{candidat_id}")
+@app.get("/matching")
 
-async def Matching(candidat_id:str):
+async def Matching():
     
-    def cv():
-
-        sql1=""" select cv from Recrunova.Recrut.users 
-                where user_id=%s
-    """
-        params=[candidat_id]
-        cursor.execute (sql1,params)
-        resultat=cursor.fetchone()
-        path=resultat[0]
+  
         
-        
-        return path
-    
-    def offre():
-        sql="SELECT * FROM  Recrunova.Recrut.Offres"
+        sql="SELECT * FROM  Recrunova.Recrut.Offres where offre_id= 102"
         cursor.execute(sql)
-        resultat=cursor.fetchall()
-        return resultat
-    path=cv()
-    resultat=offre()
-    print(path)
+        resultat=cursor.fetchone()
+        print(resultat)
+        response=f"titre:{resultat[2]}\n\n salaire:{resultat[4]}\n\n description:\t{resultat[5]}\n\n competences:\t{resultat[6]}"
+        x=lettre_motivation(response) 
+        y=save_text_to_pdf(x)
+        print(y)
+
+        
+    
    
 
   
-    response=[]
-    for row in resultat:
-
-        response=f"titre:{row[0]}\n\n salaire:{row[1]}\n\n description:\t{row[3]}\n\n competences:\t{row[2]}"
-
-
-        x=cv_matching(path,response)
-        if x*100 > 78:
-           
-            result={
-                "titre":row[0],
-                "salaire":row[1],
-                "competences":row[2],
-                "description":row[3]
-            }    
-        
-            response.append(result) 
-    return{'message':response}
+    
    
+
+ 
+
+    
 
 
 @app.get("/logout")
