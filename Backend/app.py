@@ -22,6 +22,7 @@ app.add_middleware(SessionMiddleware,secret_key=os.getenv("secret_key"),max_age=
 templates_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"templates"))
 templates=Jinja2Templates(directory=templates_dir)
 
+
 #static 
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"static"))
 app.mount("/static",StaticFiles(directory=static_dir), name="static")
@@ -43,6 +44,7 @@ time=current_time.strftime("%Y-%m-%d")
 @app.get("/")
 async def home_page(request:Request):
     user = request.session.get("user")
+    
    
     if user:
         return templates.TemplateResponse("home.html",{"request":request ,"username":user})
@@ -57,6 +59,10 @@ async def  connect_emp(request:Request):
 
 @app.post("/sing_up")
 async def connect_empl(request:Request, nom: str=Form(...),prenom:str=Form(...),nom_entreprise:str=Form(...),role:str=Form(...),password:str=Form(...),Tel:str=Form(...),Email:str=Form(...)):
+    if not nom or not prenom or not nom_entreprise or not role or not password or not Tel or not Email: 
+         message="veuillez remplir tous les champs"
+         return templates.TemplateResponse("User.html",{"request":request ,"message":message })
+         
     
     sql = "SELECT * FROM  Recrunova.Recrut.Users where Email=%s"
     params=[Email]
@@ -233,7 +239,7 @@ async def offre(request:Request):
                         response=f"titre:{row[3]}\n\n salaire:{row[4]}\n\n description:\t{row[5]}\n\n competences:\t{row[6]}"
                         path="Backend\static\CVs\cv2.pdf"
                         x=cv_matching(path,response)
-                        print(x)
+                        
                         
                       
 
@@ -342,12 +348,14 @@ async def postule(request:Request,file:UploadFile=File(...),file1:UploadFile=Fil
                 cursor.execute(sql,params)
                 Tab=[path,path1]
                 for i in Tab:
-                    if i=="path":
+                    
+                    if i==path:
                         content= await file.read()
+                        print("lettre motivation")
                     else :
-                         content= await file1.read()
+                        content= await file1.read()
                 
-                
+                        print("cv")
                     with open(i,"wb")as f:
 
                   

@@ -7,6 +7,7 @@ from langchain_openai.chat_models import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_community.document_loaders import Docx2txtLoader,PyPDFLoader
 from sklearn.metrics.pairwise import cosine_similarity
+from pathlib import Path
 
 from dotenv import load_dotenv
 import os
@@ -19,6 +20,7 @@ def cv_matching(path,response):
         embeddings=OpenAIEmbeddings(model="text-embedding-ada-002", api_key=os.getenv("ApiKey"))
                 #cv 
         path_cv=rf"{path}"
+        path=Path(path_cv)
         extension=os.path.splitext(path_cv)[1].lower()
         
         if extension==".docx":
