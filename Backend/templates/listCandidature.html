@@ -41,8 +41,9 @@
         <th scope="col">cv</th>
         <th scope="col">lettre motivation</th>
         <th scope="col">statut</th>
-        <th scope="col">chat</th>
         <th scope="col">satut de la demande </th>
+
+        <th scope="col">chat</th>
         <th scope="col">date de candidature  </th>
         <th scope="col">compatibilite  </th>
 
@@ -99,16 +100,16 @@
         
       </td>
 
+      <td >{{item.statut}}</td> 
 
        <td><!-- <a href="" type="button" class="btn btn-danger">
         <i class="bi bi-chat"></i> consulter</a>  -->
         <a href="#" type="button" class="btn btn-danger rounded-circle" 
-        style="width: 60px; height: 60px; z-index: 1050;" data-bs-toggle="modal" data-bs-target="#chatbotModal">
+        style="width: 50px; height: 47px; z-index: 1050;" data-bs-toggle="modal" data-bs-target="#chatbotModal">
         <i class="bi bi-robot fs-3"></i>
       </a>
       
       </td>
-        <td >{{item.statut}}</td> 
         <td >{{item.date}}</td>
         <td >{{item.compatibilite}} %</td>
 
