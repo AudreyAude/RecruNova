@@ -234,9 +234,10 @@ async def offre(request:Request):
                         path="Backend\static\CVs\cv2.pdf"
                         x=cv_matching(path,response)
                         print(x)
+                        
                       
 
-                        if x*100>75:
+                        if x*100>77: 
                             r.append(row)
                    
 
@@ -364,7 +365,7 @@ async def listcandidature (request:Request,id:str):
     user=request.session.get("user",None) 
     if user:
         sql = """
-  SELECT o.titre,u.nom,u.prenom ,c.cv,c.LETTRE_MOTIVATION,c.statut,c.candidature_id,o.date  FROM Recrunova.Recrut.Candidatures AS c
+  SELECT o.titre,u.nom,u.prenom ,c.cv,c.LETTRE_MOTIVATION,c.statut,c.candidature_id,o.date,o.salaire,o.description,o.competences  FROM Recrunova.Recrut.Candidatures AS c
   JOIN Recrunova.Recrut.Offres AS o
   ON c.offre_id = o.offre_id
   JOIN Recrunova.Recrut.users AS u
@@ -376,8 +377,15 @@ async def listcandidature (request:Request,id:str):
         cursor.execute(sql,params)
         resultat=cursor.fetchall()
         response=[]
+
         for item in resultat:
-            tab={
+
+            r=f"titre:{item[0]}\n\n salaire:{item[8]}\n\n description:\t{item[9]}\n\n competences:\t{item[10]}"
+            path="Backend\static\CVs\cv1.docx"
+            x=cv_matching(path,r) 
+            
+            if x*100>70:
+                tab={
                 "titre":item[0],
                 "nom":item[1],
                 "prenom":item[2],
@@ -385,12 +393,14 @@ async def listcandidature (request:Request,id:str):
                 "lettre_motivation":item[4].replace("Backend",""),
                 "statut":item[5],
                 "id_user":item[6],
-                "date":item[7]
+                "date":item[7],
+                "compatibilite":x*100
 
 
-            }
-            response.append(tab)
-       
+                }
+                response.append(tab) 
+
+        
         return templates.TemplateResponse("listcandidature.html",{"request":request,"username":user,"resultat":response})
     return templates.TemplateResponse("home.html",{"request":request})
 
@@ -560,8 +570,7 @@ async def updatepassword(request:Request,nom:str=Form(...),prenom:str=Form(...),
 
 
 
- #pour matcher le cv avec l'offre j'ai ajoute ca 
-# @app.get("/matching/{candidat_id}")
+
 @app.get("/lettre/{id}")
 
 async def lettre(request:Request,id:str):
