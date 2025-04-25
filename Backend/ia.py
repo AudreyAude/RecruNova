@@ -22,7 +22,7 @@ def cv_matching(path,response):
         path_cv=rf"{path}"
         path=Path(path_cv)
         extension=os.path.splitext(path)[1].lower()
-        print(path)
+        
         
         if extension==".docx":
                 
@@ -173,6 +173,103 @@ def chat(path,response,question):
                 - Constructif
                 - Orienté solution
                 """
+        prompt=ChatPromptTemplate.from_template(template)
+
+
+        chain=prompt|model|parser
+
+        #cv 
+        path_cv=rf"{path}"
+        extension=os.path.splitext(path_cv)[1].lower()
+        
+        if extension==".docx":
+                
+
+                loader_cv=Docx2txtLoader(path_cv)
+                text_cv=loader_cv.load()
+                
+        
+        if extension==".pdf":
+           loader = PyPDFLoader(path_cv)
+           text_cv = loader.load()
+           
+        # loader_cv=Docx2txtLoader(path_cv)
+        # text_cv=loader_cv.load()
+        text_split_cv=RecursiveCharacterTextSplitter(chunk_size=100,chunk_overlap=20)
+        doc_cv=text_split_cv.split_documents(text_cv)
+        #offre
+        text_split_offre=RecursiveCharacterTextSplitter(chunk_size=100,chunk_overlap=20)
+        doc_offre=text_split_offre.split_text(response)
+
+        embeddings=OpenAIEmbeddings(model="text-embedding-ada-002", api_key=os.getenv("ApiKey"))
+
+        VectorStore_cv= DocArrayInMemorySearch.from_documents(doc_cv,embedding=embeddings)
+        VectorStore_offre= DocArrayInMemorySearch.from_texts(doc_offre,embedding=embeddings)
+
+        chunks_retriever_cv=VectorStore_cv.as_retriever()
+        chunks_retriever_offre=VectorStore_offre.as_retriever()
+       
+        setup=RunnableParallel(cv=chunks_retriever_cv, offre_emploi=chunks_retriever_offre ,question=RunnablePassthrough())
+
+        chain=setup|prompt|model|parser
+        x=chain.invoke(question)
+        return x
+
+def chatE(path,response,question):
+        model=ChatOpenAI(model="gpt-3.5-turbo",temperature=0.0,api_key=os.getenv("ApiKey"))
+
+        parser=StrOutputParser()
+        chain=model|parser
+
+        template = """
+Tu t'appelles Audrey, une assistante RH experte. Toujours te présenter brièvement comme telle.
+
+CONTEXTE ESSENTIEL :
+1. CV du candidat ({cv})
+- Extraire et structurer :
+  * Compétences techniques et transversales
+  * Expériences professionnelles (postes, missions, résultats)
+  * Formations et diplômes
+  * Certifications et reconnaissances
+  * Réalisations marquantes et projets
+
+2. Offre d'emploi ({offre_emploi})
+- Identifier précisément :
+  * Titre du poste
+  * Responsabilités principales
+  * Compétences techniques et humaines requises
+  * Profil recherché (expérience, niveau d’étude, qualités)
+  * Critères obligatoires ou différenciateurs
+
+3. Question de l'employeur ({question})
+- Comprendre l’intention (évaluation, doute, curiosité, vérification)
+- Mettre en lien avec les éléments du CV et de l’offre
+- Fournir une réponse orientée décision et justifiée
+
+MÉCANISME D’ANALYSE :
+- Matching précis entre le CV et les exigences du poste
+- Taux de couverture des compétences et expériences
+- Analyse des écarts et propositions de valorisation ou de développement
+- Identification de tout signal fort ou faible du profil
+
+RÈGLES DE GÉNÉRATION DE LA RÉPONSE :
+- 90% minimum des données doivent venir du contexte fourni
+- Aucune supposition non justifiée
+- Langage professionnel, clair, structuré
+- Réponse toujours justifiée par des éléments concrets du CV ou de l’offre
+
+TON :
+- Professionnel
+- Respectueux
+- Neutre et objectif
+- Orienté décision pour l’employeur
+
+OBJECTIF :
+- Aider l’employeur à évaluer rapidement la pertinence du candidat
+- Fournir des éléments fiables et exploitables pour la prise de décision
+- Valoriser le profil ou proposer des pistes d’amélioration si nécessaire
+"""
+
         prompt=ChatPromptTemplate.from_template(template)
 
 

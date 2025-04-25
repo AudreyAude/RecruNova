@@ -10,7 +10,7 @@ from starlette.middleware.sessions import SessionMiddleware
 # from .model import User,log,offre
 from .function import password_hash,password_verify
 from.Mail import mailPostuleCandidat,mailRegister
-from .ia import cv_matching,lettre_motivation,save_text_to_pdf,chat
+from .ia import cv_matching,lettre_motivation,save_text_to_pdf,chat,chatE
 from datetime import datetime
 
 
@@ -620,6 +620,33 @@ async def chatBox(request:Request,id:str=Form(...),message:str=Form(...)):
         x= chat(path,response,message)
 
         return JSONResponse(content={"response": x}) 
+
+
+
+@app.post("/chatBotEmployeur")
+
+async def chatBox(request:Request,id:str=Form(...),message:str=Form(...)):
+    
+  
+        user=request.session.get("user",None)  
+        
+        
+        sql=""" SELECT o.titre,o.salaire,o.description,o.competences,c.cv  FROM Recrunova.Recrut.Candidatures AS c
+  JOIN Recrunova.Recrut.Offres AS o
+  ON c.offre_id = o.offre_id
+  JOIN Recrunova.Recrut.users AS u
+  ON c.user_id = u.user_id 
+  WHERE c.candidature_id =%s;"""
+        param=["301"]
+        cursor.execute(sql,param)
+        resultat=cursor.fetchone()
+        path="Backend\static\CVs\cv1.docx"
+
+        response=f"titre:{resultat[0]}\n\n salaire:{resultat[1]}\n\n description:\t{resultat[2]}\n\n competences:\t{resultat[3]}"
+        x= chatE(path,response,message)
+
+        return JSONResponse(content={"response": x}) 
+
 
         
     

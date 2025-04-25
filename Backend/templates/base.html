@@ -121,7 +121,7 @@
 
                   <li><a class="dropdown-item" href="/ajout_offre">publier une offre</a></li>
                   <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                  <li><a class="dropdown-item" href="/matching">Ia</a></li>
+                  <!-- <li><a class="dropdown-item" href="/matching">Ia</a></li> -->
 
                   <li><hr class="dropdown-divider"></li>
                   <li><a type="button"  class="dropdown-item   btn-outline-danger me-2" href="/logout">deconnexion</a></li>
@@ -193,7 +193,7 @@
   </script>
 
 
-<script>
+<!-- <script>
   const chatLog = document.getElementById("chat-log");
   const chatForm = document.getElementById("chat-form");
   const userInput = document.getElementById("user-input");
@@ -228,7 +228,47 @@
     chatLog.innerHTML += `<div class="text-start mb-2"><strong>IA :</strong> ${data.response}</div>`;
     chatLog.scrollTop = chatLog.scrollHeight;
   });
+</script> -->
+
+<script>
+  const chatLogE = document.getElementById("chat-logE");
+  const chatFormE = document.getElementById("chat-formE");
+  const userInputE = document.getElementById("user-inputE");
+  const userIdE = document.getElementById("idE");
+
+
+  chatFormE.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = userInputE.value.trim();
+    const id= userIdE.value.trim();
+    if (!message) return;
+
+    // Afficher le message utilisateur
+    chatLogE.innerHTML += `<div class="text-end mb-2"><strong>Moi :</strong> ${message}</div>`;
+    userInputE.value = "";
+
+    // Optionnel : loader IA
+    chatLogE.innerHTML += `<div id="typing" class="text-start mb-2 text-muted">L'IA écrit...</div>`;
+    chatLogE.scrollTop = chatLogE.scrollHeight;
+
+    // Appel API à FastAPI
+    const response = await fetch("/chatBotEmployeur", {
+      method: "post",
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: new URLSearchParams({ message: message, id: id })
+    });
+
+    const data = await response.json();
+    document.getElementById("typing").remove();
+
+    // Afficher réponse IA
+    chatLogE.innerHTML += `<div class="text-start mb-2"><strong>IA :</strong> ${data.response}</div>`;
+    chatLogE.scrollTop = chatLogE.scrollHeight;
+  });
 </script>
+
+
+
 
 
   

@@ -2,6 +2,34 @@
 {% block title %}liste candidats{% endblock %}
 
 {% block content %}
+
+<div class="modal fade" id="chatbotModal" tabindex="-1" aria-labelledby="chatbotModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-robot"></i> Chatbot RecruNova</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="chat-logE" class="mb-3" style="max-height: 300px; overflow-y: auto;">
+          <!-- Messages ici -->
+        </div>
+
+        <form id="chat-formE">
+          <input type="hidden" name="idE" id="idE" value=""/>
+          <textarea id="user-inputE" class="form-control mb-2" rows="2" placeholder="Posez-moi une question..."></textarea>
+          <button type="submit" class="btn btn-outline-danger w-100">
+            <i class="bi bi-send"></i> Envoyer
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <table class="table">
     <thead>
       <tr>
@@ -72,8 +100,14 @@
       </td>
 
 
-       <td><a href="" type="button" class="btn btn-danger">
-        <i class="bi bi-chat"></i> consulter</a> </td>
+       <td><!-- <a href="" type="button" class="btn btn-danger">
+        <i class="bi bi-chat"></i> consulter</a>  -->
+        <a href="#" type="button" class="btn btn-danger rounded-circle" 
+        style="width: 60px; height: 60px; z-index: 1050;" data-bs-toggle="modal" data-bs-target="#chatbotModal">
+        <i class="bi bi-robot fs-3"></i>
+      </a>
+      
+      </td>
         <td >{{item.statut}}</td> 
         <td >{{item.date}}</td>
         <td >{{item.compatibilite}} %</td>

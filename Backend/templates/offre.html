@@ -33,8 +33,9 @@
                    alt="Company logo" 
                    style="width: 70px;">
               <a class="btn btn-outline-primary btn-sm w-100  mb-4" href="{{ url_for('description', id=item[0]) }}">Voir plus...</a>
-
+              {% if username and username.Role !="1" %}
               <a href="{{ url_for('postule', id=item[0]) }}" class="btn btn-outline-primary btn-sm w-100 mb-4"><i class="bi bi-upload"></i> Postuler maintenant</a>
+              {%endif%}
             </div>
           </div>
         </div>

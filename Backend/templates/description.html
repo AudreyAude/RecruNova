@@ -16,7 +16,7 @@
         </div>
 
         <form id="chat-form">
-          <input type="hidden" name="id" id="id" value="{{resultat[0]}}"/>
+          <input type="hidden" name="id" id="id" value=""/>
           <textarea id="user-input" class="form-control mb-2" rows="2" placeholder="Posez-moi une question..."></textarea>
           <button type="submit" class="btn btn-outline-primary w-100">
             <i class="bi bi-send"></i> Envoyer
@@ -61,18 +61,26 @@
 
       <div class="col-md-4 text-center">
         <img src="/static/images/enterprise.png" class="img-fluid rounded-circle mb-3" alt="Company logo" style="width: 150px;">
+        {% if username.Role !="1" %}
+            
         <a href="{{ url_for('postule', id=resultat[0]) }}" class="btn btn-outline-primary btn-lg w-100 mb-2"><i class="bi bi-upload"></i> Postuler maintenant</a>
+
       
         <a href="#" type="button" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4 shadow" 
         style="width: 60px; height: 60px; z-index: 1050;" data-bs-toggle="modal" data-bs-target="#chatbotModal">
         <i class="bi bi-robot fs-3"></i>
       </a>
-  
-        <a href="{{ url_for('lettre', id=resultat[0]) }}" class="btn btn-secondary btn-lg w-100" >
+        {% if username  %}
+          
+        <a href="{{ url_for('lettre', id=resultat[0]) }}" class="btn btn-secondary btn-lg w-100 m-4 " >
           📄 Télécharger la lettre de motivation
         </a>
+        {%endif%}
+        
 
-        <a href="/offre" class="btn btn-link w-100">⬅ Retour aux offres</a>
+        {%endif%}
+
+        <a href="/offre" class="btn btn-link w-100 m-4 ">⬅ Retour aux offres</a>
       </div>
       </div>
     </div>
