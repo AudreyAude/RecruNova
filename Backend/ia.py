@@ -21,17 +21,18 @@ def cv_matching(path,response):
                 #cv 
         path_cv=rf"{path}"
         path=Path(path_cv)
-        extension=os.path.splitext(path_cv)[1].lower()
+        extension=os.path.splitext(path)[1].lower()
+        print(path)
         
         if extension==".docx":
                 
 
-                loader_cv=Docx2txtLoader(path_cv)
+                loader_cv=Docx2txtLoader(path)
                 text_cv=loader_cv.load()
                 text_cv_content=text_cv[0].page_content
         
         if extension==".pdf":
-           loader = PyPDFLoader(path_cv)
+           loader = PyPDFLoader(path)
            documents = loader.load()
            text_cv_content=documents[0].page_content
 

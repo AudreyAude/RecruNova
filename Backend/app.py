@@ -177,9 +177,9 @@ async def candidature (request:Request,id:str):
 async def Ajout_offre(request:Request):
         user = request.session.get("user")
    
-        if user:
-            return templates.TemplateResponse("Addjob.html",{"request":request ,"username":user})
-        return templates.TemplateResponse("Addjob.html.html",{"request":request})
+        if user: 
+            return templates.TemplateResponse("AddJob.html",{"request":request ,"username":user})
+        return templates.TemplateResponse("AddJob.htmlhtml",{"request":request})
 
 
 
@@ -190,14 +190,14 @@ async def Ajout_offre(request:Request, user_id:str=Form(...), titre :str = Form(
     if user:
         if user['Role']=="2":
                 message="desole un compte employeur est necessaire"
-                return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
+                return templates.TemplateResponse("AddJob.html",{"request":request,"message":message,"username":user})
 
         else:
 
             
             if not titre or not langue or not salaire or not description or not competences or not type_poste or not horaire or not avantages or not lieu :
                 message="veuillez remplir tout les champs svp"
-                return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
+                return templates.TemplateResponse("AddJob.html",{"request":request,"message":message,"username":user})
 
 
             else:
@@ -207,7 +207,7 @@ async def Ajout_offre(request:Request, user_id:str=Form(...), titre :str = Form(
                     cursor.execute(sql,params)
                     message="l'emploie a ete bien publie"
 
-                    return templates.TemplateResponse("Addjob.html",{"request":request,"message":message,"username":user})
+                    return templates.TemplateResponse("AddJob.html",{"request":request,"message":message,"username":user})
     else:
        RedirectResponse(url='/login', status_code=302)
 
