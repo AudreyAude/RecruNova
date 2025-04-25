@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 # from .model import User,log,offre
 from .function import password_hash,password_verify
-from.Mail import mailPostuleCandidat,mailRegister
+from.Mail import mailPostuleCandidat,mailRegister,mailNotifyEmployeur
 from .ia import cv_matching,lettre_motivation,save_text_to_pdf,chat,chatE
 from datetime import datetime
 
@@ -326,6 +326,22 @@ async def postule(request:Request,id:str):
 @app.post("/postule")
 async def postule(request:Request,file:UploadFile=File(...),file1:UploadFile=File(...),user_id: str = Form(...),offre_id:str=Form(...)):
         
+        def info(id):
+            sql=""" SELECT u.email,u.NOM_ENTREPRISE
+FROM Recrunova.Recrut.Users u
+JOIN Recrunova.Recrut.offres o  ON u.user_id = o.user_id
+WHERE o.offre_id = %s;
+
+"""         
+            params=[id] 
+            cursor.execute(sql,params)
+            resultat=cursor.fetchone()
+
+            return resultat
+     
+
+             
+        
         user = request.session.get("user")
         if user:
 
@@ -364,6 +380,10 @@ async def postule(request:Request,file:UploadFile=File(...),file1:UploadFile=Fil
                 password= os.getenv("password")
 
                 mailPostuleCandidat(user['Email'],user['nom'],password)
+                x=info(offre_id)
+       
+                mailNotifyEmployeur(x[0],x[1],password)
+        
 
                 return templates.TemplateResponse("postule.html",{"request":request ,"username":user,"message":response})
         return RedirectResponse(url='/login', status_code=302)  

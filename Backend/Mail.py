@@ -105,4 +105,51 @@ def mailPostuleCandidat(receiver_email,nom,password):
         
 
         
+def mailNotifyEmployeur(receiver_email,nom,password):
+        sender_email='recrunova0@gmail.com'
+        message = MIMEMultipart("alternative")
+        message["Subject"] = f"candidature via ReCruNova"
+        message["From"] = sender_email
+        message["To"] = receiver_email
+     
+        
+        html=f"""\
+        <html>
+        <body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px;">
+            <div style="max-width: 600px; margin: auto; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 20px;">
+            
+            <h2 style="color: #0d6efd;">Bonjour {nom}  </h2>
+            <p style="font-size: 16px; color: #333;">
+             Vous avez reçu une nouvelle <strong>candidature</strong> à l'une de vos offres d’emploi publiées sur <strong>RecruNova</strong>.<br><br>
+            Nous vous invitons à consulter les détails de cette candidature en vous connectant à votre espace employeur.
+            </p>
+
+
+            <hr style="margin: 30px 0;">
+
+            <p >
+                Merci de faire partie de RecruNova. Nous vous souhaitons une expérience réussie et pleine de succès !<br>
+                <strong>– L’équipe RecruNova</strong>
+            </p>
+            </div>
+        </body>
+        </html>
+        """
+        part=MIMEText(html,"html")
+        message.attach(part)
+
+        context = ssl.create_default_context()
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+                server.login(sender_email, password)
+                server.sendmail(
+                    sender_email, receiver_email, message.as_string()
+                )
+                return("Email envoyé avec succès !")
+        except Exception as e:
+                return(" Échec de l'envoi :", e)
+        
+
+        
+
 
