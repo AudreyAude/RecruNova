@@ -179,7 +179,7 @@ async def Ajout_offre(request:Request):
    
         if user: 
             return templates.TemplateResponse("AddJob.html",{"request":request ,"username":user})
-        return templates.TemplateResponse("AddJob.htmlhtml",{"request":request})
+        return templates.TemplateResponse("AddJob.html",{"request":request})
 
 
 
@@ -237,7 +237,9 @@ async def offre(request:Request):
                     for row in resultat:
 
                         response=f"titre:{row[3]}\n\n salaire:{row[4]}\n\n description:\t{row[5]}\n\n competences:\t{row[6]}"
-                        path="Backend\static\CVs\cv2.pdf"
+                        path=user['cv']
+
+                        # path="Backend\static\CVs\cv2.pdf"
                         x=cv_matching(path,response)
                         
                         
