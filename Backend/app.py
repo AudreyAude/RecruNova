@@ -239,6 +239,7 @@ async def offre(request:Request):
 
                         response=f"titre:{row[3]}\n\n salaire:{row[4]}\n\n description:\t{row[5]}\n\n competences:\t{row[6]}"
                         path=user['cv']
+                        print(path)
 
                         # path="Backend\static\CVs\cv2.pdf"
                         x=cv_matching(path,response)
@@ -407,13 +408,19 @@ async def listcandidature (request:Request,id:str):
         params=[id]
         cursor.execute(sql,params)
         resultat=cursor.fetchall()
+        
         response=[]
 
         for item in resultat:
+            print(item)
 
             r=f"titre:{item[0]}\n\n salaire:{item[8]}\n\n description:\t{item[9]}\n\n competences:\t{item[10]}"
-            path="Backend\static\CVs\cv1.docx"
+            # path="Backend\static\CVs\cv1.docx"
+            path=item[3]
+           
+            
             x=cv_matching(path,r) 
+            print(x)
             
             if x*100>70:
                 tab={
