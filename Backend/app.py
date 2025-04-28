@@ -179,7 +179,8 @@ async def Ajout_offre(request:Request):
    
         if user: 
             return templates.TemplateResponse("AddJob.html",{"request":request ,"username":user})
-        return templates.TemplateResponse("AddJob.html",{"request":request})
+        return RedirectResponse(url='/login', status_code=302)
+
 
 
 
